@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <PackageId>EFCore.Migrations.CustomSql.PostgreSQL</PackageId>
+        <Title>Triggers.Postgresql</Title>
+        <Version>10.0.0</Version>
+        <Authors>AndreqGav</Authors>
+        <Product>EFCore.Migrations.CustomSql</Product>
+        <Description>Managing the creation of custom database objects (triggers, functions, views) in PostgreSQL through the EF migration.</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>entity framework core; entity-framework-core; ef core; ef-core; postgresql; ngpsql; ef-triggers; triggers; functions; view;</PackageTags>
+        <RepositoryUrl>https://github.com/AndreqGav/EFCore.Migrations.CustomSql</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright (c) Андрей Гаврилов 2026</Copyright>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\EFCore.Migrations.Triggers\EFCore.Migrations.Triggers.csproj" />
+        <ProjectReference Include="..\..\EFCore.Migrations.Abstractions\EFCore.Migrations.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
