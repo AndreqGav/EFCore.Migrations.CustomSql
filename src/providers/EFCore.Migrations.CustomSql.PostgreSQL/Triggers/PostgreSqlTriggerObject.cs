@@ -1,4 +1,4 @@
-using EFCore.Migrations.Triggers.Models;
+using EFCore.Migrations.Triggers;
 
 namespace EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
 

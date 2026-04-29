@@ -1,18 +1,35 @@
-﻿using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
-using EFCore.Migrations.Triggers.Abstractions;
+﻿using EFCore.Migrations.CustomSql.Abstractions;
+using EFCore.Migrations.CustomSql.PostgreSQL.Functions;
+using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
+using EFCore.Migrations.CustomSql.PostgreSQL.Views;
+using EFCore.Migrations.Functions;
+using EFCore.Migrations.Triggers;
+using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EFCore.Migrations.CustomSql.PostgreSQL;
 
-public class PostgreSqlProviderExtension : TriggerSqlExtension
+public class PostgreSqlProviderExtension : CustomSqlProviderExtension
 {
     public override void ApplyServices(IServiceCollection services)
     {
-        base.ApplyServices(services);
+        new EntityFrameworkServicesBuilder(services)
+            .TryAdd<IConventionSetPlugin, TriggerSetPlugin<PostgreSqlTriggerObject>>();
+
+        new EntityFrameworkServicesBuilder(services)
+            .TryAdd<IConventionSetPlugin, FunctionSetPlugin<FunctionObject>>();
+
+        new EntityFrameworkServicesBuilder(services)
+            .TryAdd<IConventionSetPlugin, ViewSetPlugin<ViewObject>>();
 
         new EntityFrameworkServicesBuilder(services)
             .TryAddProviderSpecificServices(serviceMap =>
-                serviceMap.TryAddSingleton<ITriggerSqlGenerator, PostgreSqlTriggerSqlGenerator>());
+            {
+                serviceMap.TryAddSingleton<ISqlObjectGenerator<PostgreSqlTriggerObject>, PostgreSqlTriggerSqlGenerator>();
+                serviceMap.TryAddSingleton<ISqlObjectGenerator<ViewObject>, PostgreSqlViewSqlGenerator>();
+                serviceMap.TryAddSingleton<ISqlObjectGenerator<FunctionObject>, PostgreSqlFunctionSqlGenerator>();
+            });
     }
 }

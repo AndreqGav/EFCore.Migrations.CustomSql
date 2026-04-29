@@ -1,6 +1,7 @@
+using System;
+using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
-using EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Sql;
 using EFCore.Migrations.CustomSql.Tests.Models;
 using EFCore.Migrations.CustomSql.Tests.Models.Inheritance;
 using Microsoft.EntityFrameworkCore;
@@ -119,4 +120,62 @@ public class PostgreSqlMigrationDbContext : DbContext
         modelBuilder.Entity<BlogA>();
         modelBuilder.Entity<BlogB>();
     }
+}
+
+public static class BlogFunctionSql
+{
+    public static string GetName(int id) => throw new InvalidOperationException();
+
+    public static string Up() =>
+        "CREATE OR REPLACE FUNCTION GetName(id integer)\n" +
+        "RETURNS text AS $$\n" +
+        "BEGIN\n" +
+        "RETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\n" +
+        " END;\n" +
+        "$$ LANGUAGE plpgsql;";
+
+    public static string Down() => "DROP FUNCTION IF EXISTS GetName";
+}
+
+public class BlogTriggerSqlGenerator : CustomSqlGenerator
+{
+    public BlogTriggerSqlGenerator(DbContext dbContext, ModelBuilder modelBuilder) : base(dbContext, modelBuilder)
+    {
+    }
+
+    public string GenerateTriggerBody()
+    {
+        var blogTable = GetTableName<Blog>();
+        var nameColumn = GetColumnName<Blog>(x => x.Name);
+        var urlColumn = GetColumnName<Blog>(x => x.Url);
+
+        return
+            $"IF NEW.{urlColumn} IS NOT NULL AND NEW.{urlColumn} IS DISTINCT FROM OLD.{urlColumn} THEN\n" +
+            $"    RAISE EXCEPTION 'Нельзя менять URL';\n" +
+            $"END IF;\n" +
+            $"IF NEW.{nameColumn} IS NOT NULL THEN\n" +
+            $"    UPDATE {blogTable} SET {urlColumn} = NEW.{urlColumn}\n" +
+            $"    WHERE {nameColumn} = NEW.{nameColumn};\n" +
+            $"END IF;";
+    }
+}
+
+public class BlogViewSqlGenerator : CustomSqlGenerator
+{
+    public BlogViewSqlGenerator(DbContext dbContext, ModelBuilder modelBuilder) : base(dbContext, modelBuilder)
+    {
+    }
+
+    public string Create()
+    {
+        var blogTable = GetTableName<Blog>();
+        var idColumn = GetColumnName<Blog>(e => e.Id);
+        var nameColumn = GetColumnName<Blog>(e => e.Name);
+
+        return
+            "CREATE OR REPLACE VIEW public.blog_names\n" +
+            $"AS SELECT {idColumn}, {nameColumn} FROM {blogTable}";
+    }
+
+    public string Drop() => "DROP VIEW IF EXISTS public.blog_names";
 }

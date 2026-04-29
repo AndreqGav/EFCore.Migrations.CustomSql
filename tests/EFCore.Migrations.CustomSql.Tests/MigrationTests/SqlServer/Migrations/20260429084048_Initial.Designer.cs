@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 {
     [DbContext(typeof(SqlServerMigrationDbContext))]
-    [Migration("20260429071105_Initial")]
+    [Migration("20260429084048_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -134,7 +134,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
                         .HasAnnotation("SqlDown:trg_order_prevent_negative_amount", "DROP TRIGGER [trg_order_prevent_negative_amount];")
                         .HasAnnotation("SqlDown:trg_order_set_confirmed", "DROP TRIGGER [trg_order_set_confirmed];")
                         .HasAnnotation("SqlServer:UseSqlOutputClause", false)
-                        .HasAnnotation("SqlUp:trg_order_prevent_negative_amount", "CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\nON [Orders]\nAFTER UPDATE\nAS\nBEGIN\n    SET NOCOUNT ON;\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\n    THROW 50001, 'Amount must not be negative', 1;\nEND;")
+                        .HasAnnotation("SqlUp:trg_order_prevent_negative_amount", "CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\nON [Orders]\nAFTER UPDATE\nAS\nBEGIN\n    SET NOCOUNT ON;\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\r\n    THROW 50001, 'Amount must not be negative', 1;\nEND;")
                         .HasAnnotation("SqlUp:trg_order_set_confirmed", "CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\nON [Orders]\nAFTER INSERT\nAS\nBEGIN\n    SET NOCOUNT ON;\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\nEND;");
                 });
 

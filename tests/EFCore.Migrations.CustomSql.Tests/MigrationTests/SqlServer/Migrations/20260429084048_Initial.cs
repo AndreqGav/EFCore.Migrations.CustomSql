@@ -63,7 +63,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 
             migrationBuilder.Sql("CREATE VIEW blog_view AS SELECT * FROM [Blogs]");
 
-            migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\nON [Orders]\nAFTER UPDATE\nAS\nBEGIN\n    SET NOCOUNT ON;\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\n    THROW 50001, 'Amount must not be negative', 1;\nEND;");
+            migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\nON [Orders]\nAFTER UPDATE\nAS\nBEGIN\n    SET NOCOUNT ON;\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\r\n    THROW 50001, 'Amount must not be negative', 1;\nEND;");
 
             migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\nON [Orders]\nAFTER INSERT\nAS\nBEGIN\n    SET NOCOUNT ON;\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\nEND;");
         }

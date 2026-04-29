@@ -13,13 +13,13 @@ public static class RelationalModelHelper
     // т.к. для каждого SQL сущесвутет две операции (Up и Down) и для текстового представление в миграции
     // они помещены в разные аннотации.
     // В этом методе они комбинируются снова вместе 
-    public static IReadOnlyList<CustomSqlModels> GetCustomSqlAnnotations(IRelationalModel relationalModel)
+    public static IReadOnlyList<CustomSqlAnnotation> GetCustomSqlAnnotations(IRelationalModel relationalModel)
     {
         var model = relationalModel?.Model;
 
         if (model is null)
         {
-            return new List<CustomSqlModels>(0);
+            return new List<CustomSqlAnnotation>(0);
         }
 
         var annotations = GetAllAnnotations(model)
@@ -48,7 +48,12 @@ public static class RelationalModelHelper
 
         if (sqlUpAnnotation.Count != sqlDownAnnotation.Count)
         {
-            throw new Exception("Несовпадение пользовательских аннотаций на создание и удаление SQL");
+            var upNames = sqlUpAnnotation.Select(a => a.Name).ToHashSet();
+            var downNames = sqlDownAnnotation.Select(a => a.Name).ToHashSet();
+            var missingDown = upNames.Except(downNames);
+            var missingUp = downNames.Except(upNames);
+            var details = string.Join(", ", missingDown.Select(n => $"'{n}' missing SqlDown").Concat(missingUp.Select(n => $"'{n}' missing SqlUp")));
+            throw new InvalidOperationException($"Mismatch between SqlUp and SqlDown annotations: {details}");
         }
 
         var combinedAnnotations = sqlUpAnnotation.Concat(sqlDownAnnotation)
@@ -59,7 +64,7 @@ public static class RelationalModelHelper
                 SqlUp = g.Single(x => x.Prefix == CustomSqlConstants.SqlUp).Sql,
                 SqlDown = g.Single(x => x.Prefix == CustomSqlConstants.SqlDown).Sql,
             })
-            .Select(x => new CustomSqlModels(x.Name, x.SqlUp, x.SqlDown));
+            .Select(x => new CustomSqlAnnotation(x.Name, x.SqlUp, x.SqlDown));
 
         return combinedAnnotations.ToList();
     }

@@ -1,5 +1,4 @@
 ﻿using EFCore.Migrations.CustomSql.Constants;
-using EFCore.Migrations.CustomSql.Helpers;
 
 namespace EFCore.Migrations.CustomSql.Models;
 
@@ -11,8 +10,8 @@ public abstract class SqlAnnotationModel
 
     protected SqlAnnotationModel(string annotation, string sql)
     {
-        Annotation = annotation.NormalizeLineEndings();
-        Sql = sql.NormalizeLineEndings();
+        Annotation = annotation;
+        Sql = sql;
     }
 }
 
@@ -30,7 +29,7 @@ public class SqlDownModel : SqlAnnotationModel
     }
 }
 
-public class CustomSqlModels
+public class CustomSqlAnnotation
 {
     public string Name { get; }
 
@@ -38,7 +37,7 @@ public class CustomSqlModels
 
     public string SqlDown { get; }
 
-    public CustomSqlModels(string name, string sqlUp, string sqlDown)
+    public CustomSqlAnnotation(string name, string sqlUp, string sqlDown)
     {
         Name = name;
         SqlUp = sqlUp;

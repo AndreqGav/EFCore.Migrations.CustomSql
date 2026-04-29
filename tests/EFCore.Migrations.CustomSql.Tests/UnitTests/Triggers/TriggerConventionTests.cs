@@ -1,12 +1,12 @@
 using System.Linq;
+using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.CustomSql.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
 using EFCore.Migrations.Triggers;
-using EFCore.Migrations.Triggers.Abstractions;
-using EFCore.Migrations.Triggers.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -201,23 +201,24 @@ public static class FakeDependencyInjection
     }
 }
 
-internal sealed class FakeTriggerProviderExtension : TriggerSqlExtension
+internal sealed class FakeTriggerProviderExtension : CustomSqlProviderExtension
 {
     public override void ApplyServices(IServiceCollection services)
     {
-        base.ApplyServices(services);
+        new EntityFrameworkServicesBuilder(services)
+            .TryAdd<IConventionSetPlugin, TriggerSetPlugin<FakeTriggerObject>>();
 
         new EntityFrameworkServicesBuilder(services)
             .TryAddProviderSpecificServices(serviceMap =>
-                serviceMap.TryAddSingleton<ITriggerSqlGenerator, FakeTriggerSqlGenerator>());
+                serviceMap.TryAddSingleton<ISqlObjectGenerator<FakeTriggerObject>, FakeTriggerSqlGenerator>());
     }
 }
 
-internal sealed class FakeTriggerSqlGenerator : ITriggerSqlGenerator
+internal sealed class FakeTriggerSqlGenerator : ISqlObjectGenerator<FakeTriggerObject>
 {
-    public string GenerateCreateTriggerSql(TriggerObject trigger) => $"FAKE_CREATE";
+    public string GenerateCreateSql(FakeTriggerObject obj) => "FAKE_CREATE";
 
-    public string GenerateDeleteTriggerSql(TriggerObject trigger) => $"FAKE_DROP";
+    public string GenerateDropSql(FakeTriggerObject obj) => "FAKE_DROP";
 }
 
 internal sealed record FakeTriggerObject : TriggerObject

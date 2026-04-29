@@ -1,6 +1,8 @@
-namespace EFCore.Migrations.Triggers.Models;
+using EFCore.Migrations.CustomSql.Abstractions;
 
-public abstract record TriggerObject
+namespace EFCore.Migrations.Triggers;
+
+public abstract record TriggerObject : INamedSqlObject
 {
     public string Name { get; init; }
 

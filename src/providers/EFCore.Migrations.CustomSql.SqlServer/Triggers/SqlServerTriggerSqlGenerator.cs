@@ -1,13 +1,11 @@
 using System;
 using System.Text;
-using EFCore.Migrations.CustomSql.Helpers;
-using EFCore.Migrations.Triggers.Abstractions;
-using EFCore.Migrations.Triggers.Models;
+using EFCore.Migrations.CustomSql.Abstractions;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.SqlServer.Triggers;
 
-public class SqlServerTriggerSqlGenerator : ITriggerSqlGenerator
+public class SqlServerTriggerSqlGenerator : ISqlObjectGenerator<SqlServerTriggerObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 
@@ -16,10 +14,8 @@ public class SqlServerTriggerSqlGenerator : ITriggerSqlGenerator
         _sqlGenerationHelper = sqlGenerationHelper;
     }
 
-    public string GenerateCreateTriggerSql(TriggerObject triggerObject)
+    public string GenerateCreateSql(SqlServerTriggerObject trigger)
     {
-        var trigger = (SqlServerTriggerObject)triggerObject;
-
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
         var tableName = _sqlGenerationHelper.DelimitIdentifier(trigger.Table, trigger.Schema);
 
@@ -33,13 +29,12 @@ public class SqlServerTriggerSqlGenerator : ITriggerSqlGenerator
         builder.AppendLine($"{trigger.Body}");
         builder.Append("END;");
 
-        return builder.ToString().NormalizeLineEndings().Trim();
+        return builder.ToString();
     }
 
-    public string GenerateDeleteTriggerSql(TriggerObject trigger)
+    public string GenerateDropSql(SqlServerTriggerObject trigger)
     {
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
-
         return $"DROP TRIGGER {name};";
     }
 

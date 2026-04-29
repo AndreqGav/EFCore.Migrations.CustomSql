@@ -1,13 +1,11 @@
-﻿using System;
+using System;
 using System.Text;
-using EFCore.Migrations.CustomSql.Helpers;
-using EFCore.Migrations.Triggers.Abstractions;
-using EFCore.Migrations.Triggers.Models;
+using EFCore.Migrations.CustomSql.Abstractions;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
 
-public class PostgreSqlTriggerSqlGenerator : ITriggerSqlGenerator
+public class PostgreSqlTriggerSqlGenerator : ISqlObjectGenerator<PostgreSqlTriggerObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 
@@ -16,10 +14,8 @@ public class PostgreSqlTriggerSqlGenerator : ITriggerSqlGenerator
         _sqlGenerationHelper = sqlGenerationHelper;
     }
 
-    public string GenerateCreateTriggerSql(TriggerObject triggerObject)
+    public string GenerateCreateSql(PostgreSqlTriggerObject trigger)
     {
-        var trigger = (PostgreSqlTriggerObject)triggerObject;
-
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
         var tableName = _sqlGenerationHelper.DelimitIdentifier(trigger.Table, trigger.Schema);
 
@@ -41,33 +37,26 @@ public class PostgreSqlTriggerSqlGenerator : ITriggerSqlGenerator
         {
             case ConstraintTriggerType.NotDeferrable:
                 builder.AppendLine("NOT DEFERRABLE");
-
                 break;
 
             case ConstraintTriggerType.DeferrableInitiallyImmediate:
                 builder.AppendLine("DEFERRABLE INITIALLY IMMEDIATE");
-
                 break;
 
             case ConstraintTriggerType.DeferrableInitiallyDeferred:
                 builder.AppendLine("DEFERRABLE INITIALLY DEFERRED");
-
                 break;
         }
 
         builder.Append($"FOR EACH ROW EXECUTE PROCEDURE {name}();");
 
-        return builder.ToString().NormalizeLineEndings().Trim();
+        return builder.ToString();
     }
 
-    public string GenerateDeleteTriggerSql(TriggerObject trigger)
+    public string GenerateDropSql(PostgreSqlTriggerObject trigger)
     {
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
-
-        var builder = new StringBuilder();
-        builder.Append($"DROP FUNCTION {name}() CASCADE;");
-
-        return builder.ToString();
+        return $"DROP FUNCTION {name}() CASCADE;";
     }
 
     private static string GetResultSql(TriggerOperationEnum operation)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EFCore.Migrations.Abstractions;
 using EFCore.Migrations.CustomSql.Helpers;
@@ -44,7 +45,7 @@ public class CustomSqlMigrationOperationModifier : IMigrationOperationModifier
 
             if (sourceAnnotation is not null)
             {
-                if (targetSql != sourceSql)
+                if (!MultilineEquals(targetSql, sourceSql))
                 {
                     AddToDelete(sourceAnnotation.SqlDown);
                     AddToCreate(targetSql);
@@ -73,4 +74,10 @@ public class CustomSqlMigrationOperationModifier : IMigrationOperationModifier
             }
         }
     }
+    
+    private static bool MultilineEquals(string sourceString, string targetString, StringComparison comparisonType = StringComparison.Ordinal)
+        => ReferenceEquals(sourceString, targetString)
+           || sourceString is not null
+           && targetString is not null
+           && string.Equals(sourceString.ReplaceLineEndings(), targetString.ReplaceLineEndings(), comparisonType);
 }

@@ -41,4 +41,16 @@ public static class AddCustomSqlExtensions
 
         return entityTypeBuilder;
     }
+
+    public static IConventionModelBuilder AddCustomSql(this IConventionModelBuilder modelBuilder, string name,
+        string sqlUp, string sqlDown)
+    {
+        var sqlUpModel = new SqlUpModel(name, sqlUp);
+        var sqlDownModel = new SqlDownModel(name, sqlDown);
+
+        modelBuilder.HasAnnotation(sqlUpModel.Annotation, sqlUpModel.Sql);
+        modelBuilder.HasAnnotation(sqlDownModel.Annotation, sqlDownModel.Sql);
+
+        return modelBuilder;
+    }
 }

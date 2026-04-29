@@ -33,29 +33,30 @@ public class PostgreSqlTriggerSqlGeneratorTests
         };
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ReturnExactFullSql()
+    public void GenerateCreateSql_Should_ReturnExactFullSql()
     {
         // Arrange
         var trigger = MakeTrigger(name: "my_trigger", table: "my_table", body: "PERFORM 1;", time: TriggerTimeEnum.Before,
             operation: TriggerOperationEnum.Insert);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Equal(
-            "CREATE FUNCTION \"my_trigger\"() RETURNS trigger as $my_trigger$\nBEGIN\nPERFORM 1;\nRETURN NEW;\nEND;\n$my_trigger$ LANGUAGE plpgsql;\n\nCREATE TRIGGER \"my_trigger\" BEFORE INSERT\nON \"my_table\"\nFOR EACH ROW EXECUTE PROCEDURE \"my_trigger\"();",
+            "CREATE FUNCTION \"my_trigger\"() RETURNS trigger as $my_trigger$\nBEGIN\nPERFORM 1;\nRETURN NEW;\nEND;\n$my_trigger$ LANGUAGE plpgsql;\n\nCREATE TRIGGER \"my_trigger\" BEFORE INSERT\nON \"my_table\"\nFOR EACH ROW EXECUTE PROCEDURE \"my_trigger\"();"
+                .ReplaceLineEndings(),
             sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainFunctionDefinition()
+    public void GenerateCreateSql_Should_ContainFunctionDefinition()
     {
         // Arrange
         var trigger = MakeTrigger(name: "fn_test", body: "PERFORM 1;");
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("CREATE FUNCTION \"fn_test\"() RETURNS trigger", sql);
@@ -65,169 +66,169 @@ public class PostgreSqlTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_EndsWithForEachRowExecuteProcedure()
+    public void GenerateCreateSql_Should_EndsWithForEachRowExecuteProcedure()
     {
         // Arrange
         var trigger = MakeTrigger("my_trigger");
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.EndsWith("FOR EACH ROW EXECUTE PROCEDURE \"my_trigger\"();", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ReturnNEW_ForInsertOperation()
+    public void GenerateCreateSql_Should_ReturnNEW_ForInsertOperation()
     {
         // Arrange
         var trigger = MakeTrigger(operation: TriggerOperationEnum.Insert);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("RETURN NEW;", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ReturnNEW_ForUpdateOperation()
+    public void GenerateCreateSql_Should_ReturnNEW_ForUpdateOperation()
     {
         // Arrange
         var trigger = MakeTrigger(operation: TriggerOperationEnum.Update);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("RETURN NEW;", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ReturnNEW_ForInsertOrUpdateOperation()
+    public void GenerateCreateSql_Should_ReturnNEW_ForInsertOrUpdateOperation()
     {
         // Arrange
         var trigger = MakeTrigger(operation: TriggerOperationEnum.InsertOrUpdate);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("RETURN NEW;", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ReturnOLD_ForDeleteOperation()
+    public void GenerateCreateSql_Should_ReturnOLD_ForDeleteOperation()
     {
         // Arrange
         var trigger = MakeTrigger(operation: TriggerOperationEnum.Delete);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("RETURN OLD;", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainBEFORE_ForBeforeTime()
+    public void GenerateCreateSql_Should_ContainBEFORE_ForBeforeTime()
     {
         // Arrange
         var trigger = MakeTrigger(time: TriggerTimeEnum.Before);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("BEFORE", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainAFTER_ForAfterTime()
+    public void GenerateCreateSql_Should_ContainAFTER_ForAfterTime()
     {
         // Arrange
         var trigger = MakeTrigger(time: TriggerTimeEnum.After);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("AFTER", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainINSTEAD_OF_ForInsteadTime()
+    public void GenerateCreateSql_Should_ContainINSTEAD_OF_ForInsteadTime()
     {
         // Arrange
         var trigger = MakeTrigger(time: TriggerTimeEnum.Instead);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("INSTEAD OF", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainBEFORE_INSERT_ForInsertOperation()
+    public void GenerateCreateSql_Should_ContainBEFORE_INSERT_ForInsertOperation()
     {
         // Arrange
         var trigger = MakeTrigger(operation: TriggerOperationEnum.Insert, time: TriggerTimeEnum.Before);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("BEFORE INSERT", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainBEFORE_UPDATE_ForUpdateOperation()
+    public void GenerateCreateSql_Should_ContainBEFORE_UPDATE_ForUpdateOperation()
     {
         // Arrange
         var trigger = MakeTrigger(operation: TriggerOperationEnum.Update, time: TriggerTimeEnum.Before);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("BEFORE UPDATE", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainAFTER_DELETE_ForDeleteOperation()
+    public void GenerateCreateSql_Should_ContainAFTER_DELETE_ForDeleteOperation()
     {
         // Arrange
         var trigger = MakeTrigger(operation: TriggerOperationEnum.Delete, time: TriggerTimeEnum.After);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("AFTER DELETE", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainBEFORE_INSERT_OR_UPDATE_ForInsertOrUpdateOperation()
+    public void GenerateCreateSql_Should_ContainBEFORE_INSERT_OR_UPDATE_ForInsertOrUpdateOperation()
     {
         // Arrange
         var trigger = MakeTrigger(operation: TriggerOperationEnum.InsertOrUpdate, time: TriggerTimeEnum.Before);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("BEFORE INSERT OR UPDATE", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_CreateRegularTrigger_WithoutConstraintKeywords()
+    public void GenerateCreateSql_Should_CreateRegularTrigger_WithoutConstraintKeywords()
     {
         // Arrange
         var trigger = MakeTrigger(time: TriggerTimeEnum.After);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("CREATE TRIGGER", sql);
@@ -237,13 +238,13 @@ public class PostgreSqlTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainCONSTRAINT_TRIGGER_And_NOT_DEFERRABLE()
+    public void GenerateCreateSql_Should_ContainCONSTRAINT_TRIGGER_And_NOT_DEFERRABLE()
     {
         // Arrange
         var trigger = MakeTrigger(constraintType: ConstraintTriggerType.NotDeferrable);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("CREATE CONSTRAINT TRIGGER", sql);
@@ -251,13 +252,13 @@ public class PostgreSqlTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainDEFERRABLE_INITIALLY_IMMEDIATE()
+    public void GenerateCreateSql_Should_ContainDEFERRABLE_INITIALLY_IMMEDIATE()
     {
         // Arrange
         var trigger = MakeTrigger(constraintType: ConstraintTriggerType.DeferrableInitiallyImmediate);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("CREATE CONSTRAINT TRIGGER", sql);
@@ -265,13 +266,13 @@ public class PostgreSqlTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_ContainDEFERRABLE_INITIALLY_DEFERRED()
+    public void GenerateCreateSql_Should_ContainDEFERRABLE_INITIALLY_DEFERRED()
     {
         // Arrange
         var trigger = MakeTrigger(constraintType: ConstraintTriggerType.DeferrableInitiallyDeferred);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("CREATE CONSTRAINT TRIGGER", sql);
@@ -279,80 +280,99 @@ public class PostgreSqlTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_Should_QuoteTableName()
+    public void GenerateCreateSql_Should_QuoteTableName()
     {
         // Arrange
         var trigger = MakeTrigger(table: "Orders");
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("ON \"Orders\"", sql);
     }
 
     [Fact]
-    public void GenerateDeleteTriggerSql_Should_GenerateDropFunctionCascade()
+    public void GenerateDropSql_Should_GenerateDropFunctionCascade()
     {
         // Arrange
         var trigger = MakeTrigger(name: "my_trigger");
 
         // Act
-        var sql = _generator.GenerateDeleteTriggerSql(trigger);
+        var sql = _generator.GenerateDropSql(trigger);
 
         // Assert
         Assert.Equal("DROP FUNCTION \"my_trigger\"() CASCADE;", sql);
     }
 
     [Fact]
-    public void GenerateDeleteTriggerSql_Should_QuoteTriggerName()
+    public void GenerateDropSql_Should_QuoteTriggerName()
     {
         // Arrange
         var trigger = MakeTrigger(name: "fn_on_insert");
 
         // Act
-        var sql = _generator.GenerateDeleteTriggerSql(trigger);
+        var sql = _generator.GenerateDropSql(trigger);
 
         // Assert
         Assert.Contains("\"fn_on_insert\"", sql);
     }
 
     [Fact]
-    public void SqlUpModel_Sql_Should_NormalizeCrLfToLf()
+    public void SqlUpModel_Sql_Should_NotNormalizeCrLfToLf()
     {
         // Arrange
         var trigger = MakeTrigger(name: "fn_on_insert", body: "line1;\r\nline2;");
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
-        Assert.DoesNotContain("\r", sql);
-        Assert.DoesNotContain("\r\n", sql);
-        Assert.Contains("line1;\nline2;", sql);
+        Assert.Contains("line1;\r\nline2;", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_WithSchema_Should_ContainQualifiedTableName()
+    public void SqlUpModel_Sql_Should_ContainsFullBody()
+    {
+        // Arrange
+        const string body = """
+                            IF NEW.name is null then
+                                 RETURN 1;
+                            END IF;
+
+                            RETURN 2;
+                            """;
+
+        var trigger = MakeTrigger(name: "fn_on_insert", body);
+
+        // Act
+        var sql = _generator.GenerateCreateSql(trigger);
+
+        // Assert
+        Assert.Contains(body, sql);
+    }
+
+    [Fact]
+    public void GenerateCreateSql_WithSchema_Should_ContainQualifiedTableName()
     {
         // Arrange
         var trigger = MakeTrigger(table: "orders", schema: "public");
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("ON \"public\".\"orders\"", sql);
     }
 
     [Fact]
-    public void GenerateCreateTriggerSql_WithoutSchema_Should_ContainUnqualifiedTableName()
+    public void GenerateCreateSql_WithoutSchema_Should_ContainUnqualifiedTableName()
     {
         // Arrange
         var trigger = MakeTrigger(table: "orders", schema: null);
 
         // Act
-        var sql = _generator.GenerateCreateTriggerSql(trigger);
+        var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
         Assert.Contains("ON \"orders\"", sql);
