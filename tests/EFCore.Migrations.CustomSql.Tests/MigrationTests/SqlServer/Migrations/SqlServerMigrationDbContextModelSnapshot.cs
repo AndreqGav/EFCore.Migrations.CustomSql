@@ -45,9 +45,9 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
                         });
 
                     b
-                        .HasAnnotation("SqlDown:trg_blog_log_changes", "DROP TRIGGER [trg_blog_log_changes];")
+                        .HasAnnotation("SqlDown:trg_blog_log_changes", "DROP TRIGGER IF EXISTS [trg_blog_log_changes];")
                         .HasAnnotation("SqlServer:UseSqlOutputClause", false)
-                        .HasAnnotation("SqlUp:trg_blog_log_changes", "CREATE OR ALTER TRIGGER [trg_blog_log_changes]\nON [Blogs]\nAFTER INSERT, UPDATE\nAS\nBEGIN\n    SET NOCOUNT ON;\n-- log blog insert or update\nEND;");
+                        .HasAnnotation("SqlUp:trg_blog_log_changes", "CREATE OR ALTER TRIGGER [trg_blog_log_changes]\r\nON [Blogs]\r\nAFTER INSERT, UPDATE\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\n-- log blog insert or update\r\nEND;");
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.BlogView", b =>
@@ -128,11 +128,11 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
                         });
 
                     b
-                        .HasAnnotation("SqlDown:trg_order_prevent_negative_amount", "DROP TRIGGER [trg_order_prevent_negative_amount];")
-                        .HasAnnotation("SqlDown:trg_order_set_confirmed", "DROP TRIGGER [trg_order_set_confirmed];")
+                        .HasAnnotation("SqlDown:trg_order_prevent_negative_amount", "DROP TRIGGER IF EXISTS [trg_order_prevent_negative_amount];")
+                        .HasAnnotation("SqlDown:trg_order_set_confirmed", "DROP TRIGGER IF EXISTS [trg_order_set_confirmed];")
                         .HasAnnotation("SqlServer:UseSqlOutputClause", false)
-                        .HasAnnotation("SqlUp:trg_order_prevent_negative_amount", "CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\nON [Orders]\nAFTER UPDATE\nAS\nBEGIN\n    SET NOCOUNT ON;\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\r\n    THROW 50001, 'Amount must not be negative', 1;\nEND;")
-                        .HasAnnotation("SqlUp:trg_order_set_confirmed", "CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\nON [Orders]\nAFTER INSERT\nAS\nBEGIN\n    SET NOCOUNT ON;\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\nEND;");
+                        .HasAnnotation("SqlUp:trg_order_prevent_negative_amount", "CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\r\nON [Orders]\r\nAFTER UPDATE\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\r\n    THROW 50001, 'Amount must not be negative', 1;\r\nEND;")
+                        .HasAnnotation("SqlUp:trg_order_set_confirmed", "CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\r\nON [Orders]\r\nAFTER INSERT\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\r\nEND;");
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.PostA", b =>

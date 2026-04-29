@@ -19,36 +19,54 @@ public class PostgreSqlTriggerSqlGenerator : ISqlObjectGenerator<PostgreSqlTrigg
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
         var tableName = _sqlGenerationHelper.DelimitIdentifier(trigger.Table, trigger.Schema);
 
+        var isWrapped = trigger.Body.TrimStart().StartsWith("BEGIN", StringComparison.OrdinalIgnoreCase) ||
+                        trigger.Body.TrimStart().StartsWith("DECLARE", StringComparison.OrdinalIgnoreCase);
+
         var builder = new StringBuilder();
-        builder.AppendLine($"CREATE FUNCTION {name}() RETURNS trigger as ${trigger.Name}$");
-        builder.AppendLine("BEGIN");
-        builder.AppendLine($"{trigger.Body}");
-        builder.AppendLine(GetResultSql(trigger.Operation));
-        builder.AppendLine("END;");
-        builder.AppendLine($"${trigger.Name}$ LANGUAGE plpgsql;");
+        builder.AppendLine($"CREATE OR REPLACE FUNCTION {name}()");
+        builder.AppendLine("RETURNS trigger");
+        builder.AppendLine("LANGUAGE plpgsql");
+        builder.AppendLine("AS $$");
 
-        builder.AppendLine(string.Empty);
+        if (isWrapped)
+        {
+            builder.AppendLine(trigger.Body);
+        }
+        else
+        {
+            builder.AppendLine("BEGIN");
+            builder.AppendLine(trigger.Body);
+            builder.AppendLine(GetResultSql(trigger.Operation));
+            builder.AppendLine("END;");
+        }
 
-        builder.Append(trigger.ConstraintType == null ? "CREATE TRIGGER " : "CREATE CONSTRAINT TRIGGER ");
-        builder.AppendLine($"{name} {TimeToSql(trigger.Time)} {OperationToSql(trigger.Operation)}");
-        builder.AppendLine($"ON {tableName}");
+        builder.AppendLine("$$;");
+
+        builder.AppendLine();
+
+        builder.Append(trigger.ConstraintType == null ? "CREATE TRIGGER " : "CREATE CONSTRAINT TRIGGER ").AppendLine(name);
+        builder.AppendLine($"{TimeToSql(trigger.Time)} {OperationToSql(trigger.Operation)} ON {tableName}");
 
         switch (trigger.ConstraintType)
         {
             case ConstraintTriggerType.NotDeferrable:
                 builder.AppendLine("NOT DEFERRABLE");
+
                 break;
 
             case ConstraintTriggerType.DeferrableInitiallyImmediate:
                 builder.AppendLine("DEFERRABLE INITIALLY IMMEDIATE");
+
                 break;
 
             case ConstraintTriggerType.DeferrableInitiallyDeferred:
                 builder.AppendLine("DEFERRABLE INITIALLY DEFERRED");
+
                 break;
         }
 
-        builder.Append($"FOR EACH ROW EXECUTE PROCEDURE {name}();");
+        builder.AppendLine("FOR EACH ROW");
+        builder.Append($"EXECUTE FUNCTION {name}();");
 
         return builder.ToString();
     }
@@ -56,7 +74,8 @@ public class PostgreSqlTriggerSqlGenerator : ISqlObjectGenerator<PostgreSqlTrigg
     public string GenerateDropSql(PostgreSqlTriggerObject trigger)
     {
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
-        return $"DROP FUNCTION {name}() CASCADE;";
+
+        return $"DROP FUNCTION IF EXISTS {name}() CASCADE;";
     }
 
     private static string GetResultSql(TriggerOperationEnum operation)

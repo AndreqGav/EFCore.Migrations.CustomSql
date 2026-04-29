@@ -137,13 +137,15 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
 
             migrationBuilder.Sql("CREATE OR REPLACE FUNCTION GetName(id integer)\nRETURNS text AS $$\nBEGIN\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\n END;\n$$ LANGUAGE plpgsql;");
 
-            migrationBuilder.Sql("CREATE FUNCTION before_insert_or_update_blog() RETURNS trigger as $before_insert_or_update_blog$\nBEGIN\nIF NEW.\"Url\" IS NOT NULL AND NEW.\"Url\" IS DISTINCT FROM OLD.\"Url\" THEN\n    RAISE EXCEPTION 'Нельзя менять URL';\nEND IF;\nIF NEW.\"Name\" IS NOT NULL THEN\n    UPDATE \"Blogs\" SET \"Url\" = NEW.\"Url\"\n    WHERE \"Name\" = NEW.\"Name\";\nEND IF;\nRETURN NEW;\nEND;\n$before_insert_or_update_blog$ LANGUAGE plpgsql;\n\nCREATE TRIGGER before_insert_or_update_blog BEFORE INSERT OR UPDATE\nON \"Blogs\"\nFOR EACH ROW EXECUTE PROCEDURE before_insert_or_update_blog();");
+            migrationBuilder.Sql("CREATE OR REPLACE FUNCTION get_blog_url(id integer)\r\nRETURNS text\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\r\nEND;\r\n$$;");
 
-            migrationBuilder.Sql("CREATE VIEW blog_view AS SELECT * FROM \"Blogs\"");
+            migrationBuilder.Sql("CREATE OR REPLACE FUNCTION before_insert_or_update_blog()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nIF NEW.\"Url\" IS NOT NULL AND NEW.\"Url\" IS DISTINCT FROM OLD.\"Url\" THEN\n    RAISE EXCEPTION 'Нельзя менять URL';\nEND IF;\nIF NEW.\"Name\" IS NOT NULL THEN\n    UPDATE \"Blogs\" SET \"Url\" = NEW.\"Url\"\n    WHERE \"Name\" = NEW.\"Name\";\nEND IF;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER before_insert_or_update_blog\r\nBEFORE INSERT OR UPDATE ON \"Blogs\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION before_insert_or_update_blog();");
 
-            migrationBuilder.Sql("CREATE FUNCTION prevent_update_negative_amount() RETURNS trigger as $prevent_update_negative_amount$\nBEGIN\nIF NEW.total_amount < 0 THEN RAISE EXCEPTION 'amount negative'; END IF;\nRETURN NEW;\nEND;\n$prevent_update_negative_amount$ LANGUAGE plpgsql;\n\nCREATE TRIGGER prevent_update_negative_amount BEFORE UPDATE\nON \"Orders\"\nFOR EACH ROW EXECUTE PROCEDURE prevent_update_negative_amount();");
+            migrationBuilder.Sql("CREATE OR REPLACE VIEW blog_view AS\r\nSELECT * FROM \"Blogs\";");
 
-            migrationBuilder.Sql("CREATE FUNCTION set_order_defaults() RETURNS trigger as $set_order_defaults$\nBEGIN\nNEW.is_confirmed = false;\nRETURN NEW;\nEND;\n$set_order_defaults$ LANGUAGE plpgsql;\n\nCREATE TRIGGER set_order_defaults BEFORE INSERT\nON \"Orders\"\nFOR EACH ROW EXECUTE PROCEDURE set_order_defaults();");
+            migrationBuilder.Sql("CREATE OR REPLACE FUNCTION prevent_update_negative_amount()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nIF NEW.total_amount < 0 THEN RAISE EXCEPTION 'amount negative'; END IF;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER prevent_update_negative_amount\r\nBEFORE UPDATE ON \"Orders\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION prevent_update_negative_amount();");
+
+            migrationBuilder.Sql("CREATE OR REPLACE FUNCTION set_order_defaults()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nNEW.is_confirmed = false;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER set_order_defaults\r\nBEFORE INSERT ON \"Orders\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION set_order_defaults();");
         }
 
         /// <inheritdoc />
@@ -153,13 +155,15 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
 
             migrationBuilder.Sql("DROP FUNCTION IF EXISTS GetName");
 
-            migrationBuilder.Sql("DROP FUNCTION before_insert_or_update_blog() CASCADE;");
+            migrationBuilder.Sql("DROP FUNCTION IF EXISTS get_blog_url(id integer);");
 
-            migrationBuilder.Sql("DROP VIEW IF EXISTS blog_view");
+            migrationBuilder.Sql("DROP FUNCTION IF EXISTS before_insert_or_update_blog() CASCADE;");
 
-            migrationBuilder.Sql("DROP FUNCTION prevent_update_negative_amount() CASCADE;");
+            migrationBuilder.Sql("DROP VIEW IF EXISTS blog_view;");
 
-            migrationBuilder.Sql("DROP FUNCTION set_order_defaults() CASCADE;");
+            migrationBuilder.Sql("DROP FUNCTION IF EXISTS prevent_update_negative_amount() CASCADE;");
+
+            migrationBuilder.Sql("DROP FUNCTION IF EXISTS set_order_defaults() CASCADE;");
 
             migrationBuilder.DropTable(
                 name: "ArticleA");

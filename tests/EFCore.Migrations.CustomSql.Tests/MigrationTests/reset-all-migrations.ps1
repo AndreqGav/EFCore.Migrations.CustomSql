@@ -2,16 +2,16 @@
 
 $providers = @(
     @{
-        Name       = "SqlServer"
-        Context    = "SqlServerMigrationDbContext"
-        OutputDir  = "MigrationTests/SqlServer/Migrations"
-        Folder     = Join-Path $PSScriptRoot "SqlServer\Migrations"
-    },
-    @{
         Name       = "PostgreSQL"
         Context    = "PostgreSqlMigrationDbContext"
         OutputDir  = "MigrationTests/PostgreSQL/Migrations"
         Folder     = Join-Path $PSScriptRoot "PostgreSQL\Migrations"
+    },
+    @{
+        Name       = "SqlServer"
+        Context    = "SqlServerMigrationDbContext"
+        OutputDir  = "MigrationTests/SqlServer/Migrations"
+        Folder     = Join-Path $PSScriptRoot "SqlServer\Migrations"
     }
 )
 

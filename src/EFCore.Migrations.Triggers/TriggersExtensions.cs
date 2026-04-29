@@ -1,13 +1,25 @@
 using EFCore.Migrations.CustomSql.Constants;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EFCore.Migrations.Triggers;
 
 public static class TriggersExtensions
 {
+    public static void AddTriggerAnnotation(this IConventionAnnotatableBuilder builder, TriggerObject trigger)
+    {
+        builder.HasAnnotation($"{CustomSqlAnnotationNames.Trigger}:{trigger.Name}", trigger);
+    }
+
+    public static void AddTriggerAnnotation(this ModelBuilder modelBuilder, TriggerObject trigger)
+    {
+        modelBuilder.GetInfrastructure().AddTriggerAnnotation(trigger);
+    }
+
     public static void AddTriggerAnnotation<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, TriggerObject trigger)
         where TEntity : class
     {
-        entityTypeBuilder.HasAnnotation($"{CustomSqlAnnotationNames.Trigger}:{trigger.Name}", trigger);
+        entityTypeBuilder.GetInfrastructure().AddTriggerAnnotation(trigger);
     }
 }

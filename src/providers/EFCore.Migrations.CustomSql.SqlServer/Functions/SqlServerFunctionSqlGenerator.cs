@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.Functions;
@@ -9,24 +12,38 @@ public class SqlServerFunctionSqlGenerator : ISqlObjectGenerator<FunctionObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 
-    public SqlServerFunctionSqlGenerator(ISqlGenerationHelper sqlGenerationHelper)
+    private readonly IRelationalTypeMappingSource _typeMappingSource;
+
+    public SqlServerFunctionSqlGenerator(ISqlGenerationHelper sqlGenerationHelper, IRelationalTypeMappingSource typeMappingSource)
     {
         _sqlGenerationHelper = sqlGenerationHelper;
+        _typeMappingSource = typeMappingSource;
     }
 
     public string GenerateCreateSql(FunctionObject function)
     {
         var funcName = _sqlGenerationHelper.DelimitIdentifier(function.Name, function.Schema);
-        var args = function.Args ?? string.Empty;
-        var returnType = function.ReturnType ?? "void";
+        var args = GenerateArgsSql(function.Args);
+        var returnType = function.StoreReturnType ?? _typeMappingSource.GetMapping(function.ReturnType).StoreType;
+
+        var isWrapped = function.Body.TrimStart().StartsWith("BEGIN", StringComparison.OrdinalIgnoreCase);
+        var isTableValued = returnType.Trim().Equals("TABLE", StringComparison.OrdinalIgnoreCase);
 
         var builder = new StringBuilder();
         builder.AppendLine($"CREATE OR ALTER FUNCTION {funcName}({args})");
         builder.AppendLine($"RETURNS {returnType}");
         builder.AppendLine("AS");
-        builder.AppendLine("BEGIN");
-        builder.AppendLine(function.Body);
-        builder.Append("END;");
+
+        if (isWrapped || isTableValued)
+        {
+            builder.Append(function.Body);
+        }
+        else
+        {
+            builder.AppendLine("BEGIN");
+            builder.AppendLine(function.Body);
+            builder.Append("END;");
+        }
 
         return builder.ToString();
     }
@@ -36,5 +53,19 @@ public class SqlServerFunctionSqlGenerator : ISqlObjectGenerator<FunctionObject>
         var funcName = _sqlGenerationHelper.DelimitIdentifier(function.Name, function.Schema);
 
         return $"DROP FUNCTION IF EXISTS {funcName};";
+    }
+
+    private string GenerateArgsSql(IEnumerable<FunctionArgument> arguments)
+    {
+        if (arguments == null) return string.Empty;
+
+        var argStrings = arguments.Select(a =>
+        {
+            var pgType = a.StoreType ?? _typeMappingSource.GetMapping(a.Type).StoreType;
+
+            return $"{a.Name} {pgType}";
+        });
+
+        return string.Join(", ", argStrings);
     }
 }

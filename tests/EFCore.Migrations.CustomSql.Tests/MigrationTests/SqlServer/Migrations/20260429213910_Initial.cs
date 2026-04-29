@@ -59,13 +59,13 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 
             migrationBuilder.Sql("CREATE OR ALTER PROCEDURE [get_blog_name] @id INT AS SELECT [Name] FROM [Blogs] WHERE [Id] = @id");
 
-            migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_blog_log_changes]\nON [Blogs]\nAFTER INSERT, UPDATE\nAS\nBEGIN\n    SET NOCOUNT ON;\n-- log blog insert or update\nEND;");
+            migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_blog_log_changes]\r\nON [Blogs]\r\nAFTER INSERT, UPDATE\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\n-- log blog insert or update\r\nEND;");
 
             migrationBuilder.Sql("CREATE VIEW blog_view AS SELECT * FROM [Blogs]");
 
-            migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\nON [Orders]\nAFTER UPDATE\nAS\nBEGIN\n    SET NOCOUNT ON;\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\r\n    THROW 50001, 'Amount must not be negative', 1;\nEND;");
+            migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\r\nON [Orders]\r\nAFTER UPDATE\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\r\n    THROW 50001, 'Amount must not be negative', 1;\r\nEND;");
 
-            migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\nON [Orders]\nAFTER INSERT\nAS\nBEGIN\n    SET NOCOUNT ON;\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\nEND;");
+            migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\r\nON [Orders]\r\nAFTER INSERT\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\r\nEND;");
         }
 
         /// <inheritdoc />
@@ -73,13 +73,13 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
         {
             migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [get_blog_name]");
 
-            migrationBuilder.Sql("DROP TRIGGER [trg_blog_log_changes];");
+            migrationBuilder.Sql("DROP TRIGGER IF EXISTS [trg_blog_log_changes];");
 
             migrationBuilder.Sql("DROP VIEW IF EXISTS blog_view");
 
-            migrationBuilder.Sql("DROP TRIGGER [trg_order_prevent_negative_amount];");
+            migrationBuilder.Sql("DROP TRIGGER IF EXISTS [trg_order_prevent_negative_amount];");
 
-            migrationBuilder.Sql("DROP TRIGGER [trg_order_set_confirmed];");
+            migrationBuilder.Sql("DROP TRIGGER IF EXISTS [trg_order_set_confirmed];");
 
             migrationBuilder.DropTable(
                 name: "Blogs");

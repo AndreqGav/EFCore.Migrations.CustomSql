@@ -189,7 +189,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         entity.HasNoKey();
         entity.ToView("animals_view");
 
-        entity.AddCustomSql(
+        entity.HasCustomSql(
             name: "animals_view",
             upSql: "CREATE VIEW animals_view AS SELECT * FROM \"Animals\" WHERE \"AnimalType\" = 1",
             downSql: "DROP VIEW IF EXISTS animals_view");
@@ -254,7 +254,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     var gen = new MyCustomSqlGenerator(this, modelBuilder);
 
-    modelBuilder.AddCustomSql(
+    modelBuilder.HasCustomSql(
         name: "animals_species_view",
         upSql: gen.Up(),
         downSql: gen.Down());
@@ -315,29 +315,37 @@ public partial class Initial : Migration
         migrationBuilder.CreateTable("Figures", ...);
 
         migrationBuilder.Sql("""
-            CREATE FUNCTION set_square() RETURNS trigger AS $set_square$
+            CREATE OR REPLACE FUNCTION set_square()
+            RETURNS trigger
+            LANGUAGE plpgsql
+            AS $$
             BEGIN
                 new.square = 0;
                 RETURN NEW;
             END;
-            $set_square$ LANGUAGE plpgsql;
+            $$;
 
-            CREATE TRIGGER set_square BEFORE INSERT
-            ON "Figures"
-            FOR EACH ROW EXECUTE PROCEDURE set_square();
+            CREATE TRIGGER set_square
+            BEFORE INSERT ON "Figures"
+            FOR EACH ROW
+            EXECUTE FUNCTION set_square();
             """);
 
         migrationBuilder.Sql("""
-            CREATE FUNCTION prevent_negative_square() RETURNS trigger AS $prevent_negative_square$
+            CREATE OR REPLACE FUNCTION prevent_negative_square()
+            RETURNS trigger
+            LANGUAGE plpgsql
+            AS $$
             BEGIN
                 IF new.square < 0 THEN RAISE EXCEPTION 'square must be non-negative'; END IF;
                 RETURN NEW;
             END;
-            $prevent_negative_square$ LANGUAGE plpgsql;
+            $$;
 
-            CREATE TRIGGER prevent_negative_square BEFORE UPDATE
-            ON "Figures"
-            FOR EACH ROW EXECUTE PROCEDURE prevent_negative_square();
+            CREATE TRIGGER prevent_negative_square
+            BEFORE UPDATE ON "Figures"
+            FOR EACH ROW
+            EXECUTE FUNCTION prevent_negative_square();
             """);
     }
 
@@ -412,16 +420,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 ### Generated SQL
 
 ```sql
-CREATE FUNCTION trigger_name() RETURNS trigger AS $trigger_name$
+CREATE FUNCTION trigger_name()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
 BEGIN
     -- your body here
     RETURN NEW;  -- or RETURN OLD; for DELETE triggers
 END;
-$trigger_name$ LANGUAGE plpgsql;
+$$;
 
-CREATE TRIGGER trigger_name {BEFORE|AFTER|INSTEAD OF} {INSERT|UPDATE|DELETE|INSERT OR UPDATE}
-ON "TableName"
-FOR EACH ROW EXECUTE PROCEDURE trigger_name();
+CREATE TRIGGER trigger_name
+{BEFORE|AFTER|INSTEAD OF} {INSERT|UPDATE|DELETE|INSERT OR UPDATE} ON "TableName"
+FOR EACH ROW 
+EXECUTE FUNCTION trigger_name();
 ```
 
 Rollback:
@@ -460,7 +472,7 @@ ON [TableName]
 AFTER INSERT
 AS
 BEGIN
-    SET NOCOUNT ON;
+SET NOCOUNT ON;
     -- your body here
 END;
 ```

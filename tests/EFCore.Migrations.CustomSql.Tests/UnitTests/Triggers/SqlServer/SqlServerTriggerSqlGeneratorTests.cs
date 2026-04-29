@@ -42,7 +42,7 @@ public class SqlServerTriggerSqlGeneratorTests
 
         // Assert
         Assert.Equal(
-            "CREATE OR ALTER TRIGGER \"my_trigger\"\nON \"my_table\"\nAFTER INSERT\nAS\nBEGIN\n    SET NOCOUNT ON;\nPERFORM 1;\nEND;"
+            "CREATE OR ALTER TRIGGER \"my_trigger\"\nON \"my_table\"\nAFTER INSERT\nAS\nBEGIN\nSET NOCOUNT ON;\nPERFORM 1;\nEND;"
                 .ReplaceLineEndings(),
             sql);
     }
@@ -279,7 +279,7 @@ public class SqlServerTriggerSqlGeneratorTests
         var sql = _generator.GenerateDropSql(trigger);
 
         // Assert
-        Assert.Equal("DROP TRIGGER \"my_trigger\";", sql);
+        Assert.Equal("DROP TRIGGER IF EXISTS \"my_trigger\";", sql);
     }
 
     [Fact]

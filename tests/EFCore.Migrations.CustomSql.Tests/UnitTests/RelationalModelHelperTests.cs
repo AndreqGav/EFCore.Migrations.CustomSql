@@ -102,7 +102,7 @@ public class RelationalModelHelperTests
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.AddCustomSql(
+            modelBuilder.HasCustomSql(
                 CustomSqlAnnotationTests.SqlName,
                 CustomSqlAnnotationTests.SqlUp,
                 CustomSqlAnnotationTests.SqlDown);

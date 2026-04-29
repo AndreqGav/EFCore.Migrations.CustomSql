@@ -27,7 +27,7 @@ public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where 
             var sqlDown = _generator.GenerateDropSql(obj);
 
             modelBuilder.Metadata.RemoveAnnotation(annotation.Name);
-            modelBuilder.AddCustomSql(obj.Name, sqlUp, sqlDown);
+            modelBuilder.HasCustomSql(obj.Name, sqlUp, sqlDown);
         }
 
         foreach (var entityType in modelBuilder.Metadata.GetEntityTypes())
@@ -44,7 +44,7 @@ public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where 
                 var sqlDown = _generator.GenerateDropSql(obj);
 
                 entityType.RemoveAnnotation(annotation.Name);
-                entityType.Builder.AddCustomSql(obj.Name, sqlUp, sqlDown);
+                entityType.Builder.HasCustomSql(obj.Name, sqlUp, sqlDown);
             }
         }
     }

@@ -1,32 +1,36 @@
-﻿using EFCore.Migrations.CustomSql.Constants;
+﻿namespace EFCore.Migrations.CustomSql.Models;
 
-namespace EFCore.Migrations.CustomSql.Models;
-
-public abstract class SqlAnnotationModel
+public interface ISqlModel
 {
-    public string Annotation { get; }
+    string Name { get; }
 
-    public string Sql { get; }
+    string Sql { get; }
+}
 
-    protected SqlAnnotationModel(string annotation, string sql)
+public class SqlUpModel : ISqlModel
+{
+    public SqlUpModel(string name, string sql)
     {
-        Annotation = annotation;
+        Name = name;
         Sql = sql;
     }
+
+    public string Name { get; }
+
+    public string Sql { get; }
 }
 
-public class SqlUpModel : SqlAnnotationModel
+public class SqlDownModel : ISqlModel
 {
-    public SqlUpModel(string name, string sql) : base($"{CustomSqlConstants.SqlUp}{name}", sql)
+    public SqlDownModel(string name, string sql)
     {
+        Name = name;
+        Sql = sql;
     }
-}
 
-public class SqlDownModel : SqlAnnotationModel
-{
-    public SqlDownModel(string name, string sql) : base($"{CustomSqlConstants.SqlDown}{name}", sql)
-    {
-    }
+    public string Name { get; }
+
+    public string Sql { get; }
 }
 
 public class CustomSqlAnnotation

@@ -4,6 +4,8 @@ using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
 using EFCore.Migrations.CustomSql.Tests.Models.Inheritance;
+using EFCore.Migrations.Functions;
+using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL;
@@ -38,18 +40,13 @@ public class PostgreSqlMigrationDbContext : DbContext
     {
         // Представление blog_names строится через генератор, использующий метаданные модели
         var viewSqlGenerator = new BlogViewSqlGenerator(this, modelBuilder);
-        modelBuilder.AddCustomSql("blog_names", viewSqlGenerator.Create(), viewSqlGenerator.Drop());
+        modelBuilder.HasCustomSql("blog_names", viewSqlGenerator.Create(), viewSqlGenerator.Drop());
 
         modelBuilder.Entity<BlogView>(entity =>
         {
             entity.HasNoKey();
-            entity.ToView("blog_view");
-
-            // Ручной SQL для представления blogs_view
-            entity.AddCustomSql(
-                "blog_view",
-                "CREATE VIEW blog_view AS SELECT * FROM \"Blogs\"",
-                "DROP VIEW IF EXISTS blog_view");
+            entity.ToView("blog_view")
+                .HasSqlQuery("SELECT * FROM \"Blogs\"");
         });
     }
 
@@ -80,7 +77,12 @@ public class PostgreSqlMigrationDbContext : DbContext
     private static void ConfigureDbFunctions(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .AddCustomSql("get_blog_name", BlogFunctionSql.Up(), BlogFunctionSql.Down())
+            .HasDbFunction(typeof(BlogFunctionSql).GetMethod(nameof(BlogFunctionSql.GetName))!)
+            .HasName("get_blog_url")
+            .HasSqlBody("RETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);");
+
+        modelBuilder
+            .HasCustomSql("get_blog_name", BlogFunctionSql.Up(), BlogFunctionSql.Down())
             .HasDbFunction(typeof(BlogFunctionSql).GetMethod(nameof(BlogFunctionSql.GetName))!)
             .HasName("get_blog_name");
     }

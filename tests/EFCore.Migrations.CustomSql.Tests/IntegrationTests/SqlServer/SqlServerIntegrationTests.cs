@@ -155,12 +155,12 @@ internal class SqlServerTestDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.AddCustomSql(
+        modelBuilder.HasCustomSql(
             "blog_view",
             "CREATE VIEW blog_view AS SELECT * FROM [Blogs]",
             "DROP VIEW IF EXISTS blog_view");
 
-        modelBuilder.AddCustomSql(
+        modelBuilder.HasCustomSql(
             "get_blog_name",
             "CREATE OR ALTER PROCEDURE [get_blog_name] @id INT AS SELECT [Name] FROM [Blogs] WHERE [Id] = @id",
             "DROP PROCEDURE IF EXISTS [get_blog_name]");

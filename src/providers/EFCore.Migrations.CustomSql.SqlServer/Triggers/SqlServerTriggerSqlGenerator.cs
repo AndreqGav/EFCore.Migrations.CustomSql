@@ -19,15 +19,25 @@ public class SqlServerTriggerSqlGenerator : ISqlObjectGenerator<SqlServerTrigger
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
         var tableName = _sqlGenerationHelper.DelimitIdentifier(trigger.Table, trigger.Schema);
 
+        var isWrapped = trigger.Body.TrimStart().StartsWith("BEGIN", StringComparison.OrdinalIgnoreCase);
+
         var builder = new StringBuilder();
         builder.AppendLine($"CREATE OR ALTER TRIGGER {name}");
         builder.AppendLine($"ON {tableName}");
         builder.AppendLine($"{TimeToSql(trigger.Time)} {OperationToSql(trigger.Operation)}");
         builder.AppendLine("AS");
-        builder.AppendLine("BEGIN");
-        builder.AppendLine("    SET NOCOUNT ON;");
-        builder.AppendLine($"{trigger.Body}");
-        builder.Append("END;");
+
+        if (isWrapped)
+        {
+            builder.Append($"{trigger.Body}");
+        }
+        else
+        {
+            builder.AppendLine("BEGIN");
+            builder.AppendLine("SET NOCOUNT ON;");
+            builder.AppendLine($"{trigger.Body}");
+            builder.Append("END;");
+        }
 
         return builder.ToString();
     }
@@ -35,7 +45,8 @@ public class SqlServerTriggerSqlGenerator : ISqlObjectGenerator<SqlServerTrigger
     public string GenerateDropSql(SqlServerTriggerObject trigger)
     {
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
-        return $"DROP TRIGGER {name};";
+
+        return $"DROP TRIGGER IF EXISTS {name};";
     }
 
     private static string TimeToSql(TriggerTimeEnum time)

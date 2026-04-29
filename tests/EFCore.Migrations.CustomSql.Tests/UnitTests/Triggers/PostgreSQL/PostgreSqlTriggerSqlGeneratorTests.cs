@@ -44,7 +44,7 @@ public class PostgreSqlTriggerSqlGeneratorTests
 
         // Assert
         Assert.Equal(
-            "CREATE FUNCTION \"my_trigger\"() RETURNS trigger as $my_trigger$\nBEGIN\nPERFORM 1;\nRETURN NEW;\nEND;\n$my_trigger$ LANGUAGE plpgsql;\n\nCREATE TRIGGER \"my_trigger\" BEFORE INSERT\nON \"my_table\"\nFOR EACH ROW EXECUTE PROCEDURE \"my_trigger\"();"
+            "CREATE OR REPLACE FUNCTION \"my_trigger\"()\nRETURNS trigger\nLANGUAGE plpgsql\nAS $$\nBEGIN\nPERFORM 1;\nRETURN NEW;\nEND;\n$$;\n\nCREATE TRIGGER \"my_trigger\"\nBEFORE INSERT ON \"my_table\"\nFOR EACH ROW\nEXECUTE FUNCTION \"my_trigger\"();"
                 .ReplaceLineEndings(),
             sql);
     }
@@ -59,8 +59,9 @@ public class PostgreSqlTriggerSqlGeneratorTests
         var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
-        Assert.Contains("CREATE FUNCTION \"fn_test\"() RETURNS trigger", sql);
-        Assert.Contains("$fn_test$", sql);
+        Assert.Contains("CREATE OR REPLACE FUNCTION \"fn_test\"()", sql);
+        Assert.Contains("RETURNS trigger", sql);
+        Assert.Contains("$$", sql);
         Assert.Contains("LANGUAGE plpgsql", sql);
         Assert.Contains("PERFORM 1;", sql);
     }
@@ -75,7 +76,7 @@ public class PostgreSqlTriggerSqlGeneratorTests
         var sql = _generator.GenerateCreateSql(trigger);
 
         // Assert
-        Assert.EndsWith("FOR EACH ROW EXECUTE PROCEDURE \"my_trigger\"();", sql);
+        Assert.EndsWith("FOR EACH ROW\nEXECUTE FUNCTION \"my_trigger\"();".ReplaceLineEndings(), sql);
     }
 
     [Fact]
@@ -302,7 +303,7 @@ public class PostgreSqlTriggerSqlGeneratorTests
         var sql = _generator.GenerateDropSql(trigger);
 
         // Assert
-        Assert.Equal("DROP FUNCTION \"my_trigger\"() CASCADE;", sql);
+        Assert.Equal("DROP FUNCTION IF EXISTS \"my_trigger\"() CASCADE;", sql);
     }
 
     [Fact]

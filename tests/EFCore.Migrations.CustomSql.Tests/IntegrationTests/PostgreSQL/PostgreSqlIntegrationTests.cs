@@ -53,7 +53,7 @@ public class PostgreSqlIntegrationTests : IDisposable
     {
         var script = _context.Database.GenerateCreateScript();
 
-        Assert.Contains("CREATE FUNCTION", script);
+        Assert.Contains("CREATE OR REPLACE FUNCTION", script);
         Assert.Contains("CREATE TRIGGER", script);
     }
 
@@ -140,13 +140,13 @@ internal class PostgreSqlTestDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.AddCustomSql(
+        modelBuilder.HasCustomSql(
             "blog_view",
             "CREATE VIEW blog_view AS SELECT * FROM \"Blogs\"",
             "DROP VIEW IF EXISTS blog_view"
         );
 
-        modelBuilder.AddCustomSql("get_blog_name",
+        modelBuilder.HasCustomSql("get_blog_name",
             "CREATE OR REPLACE FUNCTION get_blog_name(id integer)\nRETURNS text AS $$\nBEGIN\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\n END;\n$$ LANGUAGE plpgsql;",
             "DROP FUNCTION IF EXISTS get_blog_name"
         );

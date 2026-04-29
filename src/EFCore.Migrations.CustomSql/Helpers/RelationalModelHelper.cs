@@ -22,51 +22,44 @@ public static class RelationalModelHelper
             return new List<CustomSqlAnnotation>(0);
         }
 
-        var annotations = GetAllAnnotations(model)
-            .Where(a => a.Name.StartsWith(CustomSqlConstants.Sql))
+        var annotations = GetAllAnnotations(model).ToList();
+
+        var sqlUpModels = annotations
+            .Where(x => x.Name.StartsWith(CustomSqlAnnotationNames.SqlUp))
+            .Select(x => new SqlUpModel(x.Name.After(':'), x.Value as string))
+            .Cast<ISqlModel>()
             .ToList();
 
-        var sqlUpAnnotation = annotations
-            .Where(a => a.Name.StartsWith(CustomSqlConstants.SqlUp))
-            .Select(a => new
-            {
-                Prefix = CustomSqlConstants.SqlUp,
-                Name = a.Name[CustomSqlConstants.SqlUp.Length..],
-                Sql = a.Value?.ToString()
-            })
+        var sqlDownModels = annotations
+            .Where(x => x.Name.StartsWith(CustomSqlAnnotationNames.SqlDown))
+            .Select(x => new SqlDownModel(x.Name.After(':'), x.Value as string))
+            .Cast<ISqlModel>()
             .ToList();
 
-        var sqlDownAnnotation = annotations
-            .Where(a => a.Name.StartsWith(CustomSqlConstants.SqlDown))
-            .Select(a => new
-            {
-                Prefix = CustomSqlConstants.SqlDown,
-                Name = a.Name[CustomSqlConstants.SqlDown.Length..],
-                Sql = a.Value?.ToString()
-            })
-            .ToList();
-
-        if (sqlUpAnnotation.Count != sqlDownAnnotation.Count)
+        if (sqlUpModels.Count != sqlDownModels.Count)
         {
-            var upNames = sqlUpAnnotation.Select(a => a.Name).ToHashSet();
-            var downNames = sqlDownAnnotation.Select(a => a.Name).ToHashSet();
+            var upNames = sqlUpModels.Select(a => a.Name).ToHashSet();
+            var downNames = sqlDownModels.Select(a => a.Name).ToHashSet();
             var missingDown = upNames.Except(downNames);
             var missingUp = downNames.Except(upNames);
-            var details = string.Join(", ", missingDown.Select(n => $"'{n}' missing SqlDown").Concat(missingUp.Select(n => $"'{n}' missing SqlUp")));
+
+            var details = string.Join(", ",
+                missingDown.Select(n => $"'{n}' missing SqlDown").Concat(missingUp.Select(n => $"'{n}' missing SqlUp")));
+
             throw new InvalidOperationException($"Mismatch between SqlUp and SqlDown annotations: {details}");
         }
 
-        var combinedAnnotations = sqlUpAnnotation.Concat(sqlDownAnnotation)
+        var customSqlAnnotations = sqlUpModels.Concat(sqlDownModels)
             .GroupBy(x => x.Name)
             .Select(g => new
             {
                 Name = g.Key,
-                SqlUp = g.Single(x => x.Prefix == CustomSqlConstants.SqlUp).Sql,
-                SqlDown = g.Single(x => x.Prefix == CustomSqlConstants.SqlDown).Sql,
+                SqlUp = g.OfType<SqlUpModel>().Single(x => x.Name == g.Key).Sql,
+                SqlDown = g.OfType<SqlDownModel>().Single(x => x.Name == g.Key).Sql,
             })
             .Select(x => new CustomSqlAnnotation(x.Name, x.SqlUp, x.SqlDown));
 
-        return combinedAnnotations.ToList();
+        return customSqlAnnotations.ToList();
     }
 
     private static IEnumerable<IAnnotation> GetAllAnnotations(IModel model)
@@ -81,5 +74,18 @@ public static class RelationalModelHelper
         }
 
         return annotations;
+    }
+}
+
+static internal class StringExtensions
+{
+    public static string After(this string source, char delimiter)
+    {
+        if (string.IsNullOrEmpty(source))
+            return string.Empty;
+
+        var index = source.IndexOf(delimiter);
+
+        return index >= 0 ? source[(index + 1)..] : string.Empty;
     }
 }

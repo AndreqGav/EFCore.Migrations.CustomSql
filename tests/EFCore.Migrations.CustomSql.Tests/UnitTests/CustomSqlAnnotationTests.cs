@@ -33,14 +33,14 @@ public class CustomSqlAnnotationTests
     }
 
     [Fact]
-    public void AddCustomSql_Should_StoreSqlUpAnnotation_WithCorrectScript()
+    public void HasCustomSql_Should_StoreSqlUpAnnotation_WithCorrectScript()
     {
         // Arrange
         using var context = new CustomSqlContext(BuildOptions<CustomSqlContext>());
 
         // Act
         var annotation = ModelAccessor.GetModel(context).GetAnnotations()
-            .SingleOrDefault(a => a.Name == $"{CustomSqlConstants.SqlUp}{SqlName}");
+            .SingleOrDefault(a => a.Name == $"{CustomSqlAnnotationNames.SqlUp}:{SqlName}");
 
         // Assert
         Assert.NotNull(annotation);
@@ -48,14 +48,14 @@ public class CustomSqlAnnotationTests
     }
 
     [Fact]
-    public void AddCustomSql_Should_StoreSqlDownAnnotation_WithCorrectScript()
+    public void HasCustomSql_Should_StoreSqlDownAnnotation_WithCorrectScript()
     {
         // Arrange
         using var context = new CustomSqlContext(BuildOptions<CustomSqlContext>());
 
         // Act
         var annotation = ModelAccessor.GetModel(context).GetAnnotations()
-            .SingleOrDefault(a => a.Name == $"{CustomSqlConstants.SqlDown}{SqlName}");
+            .SingleOrDefault(a => a.Name == $"{CustomSqlAnnotationNames.SqlDown}:{SqlName}");
 
         // Assert
         Assert.NotNull(annotation);
@@ -72,7 +72,7 @@ public class CustomSqlAnnotationTests
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.AddCustomSql(
+            modelBuilder.HasCustomSql(
                 SqlName,
                 SqlUp,
                 SqlDown);
