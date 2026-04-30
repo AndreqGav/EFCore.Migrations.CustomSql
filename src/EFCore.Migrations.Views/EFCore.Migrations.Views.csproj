@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <PackageId>EFCore.Migrations.Views</PackageId>
         <Title>EFCore.Migrations.Views</Title>
         <IsPackable>true</IsPackable>

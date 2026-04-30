@@ -20,12 +20,11 @@ public class CompositeMigrationsModelDiffer : IMigrationsModelDiffer
     public CompositeMigrationsModelDiffer(
         IRelationalTypeMappingSource typeMappingSource,
         IMigrationsAnnotationProvider migrationsAnnotationProvider,
-        IRelationalAnnotationProvider relationalAnnotationProvider,
         IRowIdentityMapFactory rowIdentityMapFactory,
         CommandBatchPreparerDependencies commandBatchPreparerDependencies,
         IEnumerable<IMigrationOperationModifier> modifiers)
     {
-        _baseDiffer = new MigrationsModelDiffer(typeMappingSource, migrationsAnnotationProvider, relationalAnnotationProvider,
+        _baseDiffer = new MigrationsModelDiffer(typeMappingSource, migrationsAnnotationProvider,
             rowIdentityMapFactory,
             commandBatchPreparerDependencies);
 

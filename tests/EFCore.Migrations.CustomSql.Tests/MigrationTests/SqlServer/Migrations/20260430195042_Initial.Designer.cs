@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 {
     [DbContext(typeof(SqlServerMigrationDbContext))]
-    [Migration("20260430141023_Initial")]
+    [Migration("20260430195042_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -19,7 +19,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "8.0.26")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("Sql:Custom:get_blog_name:Down", "DROP PROCEDURE IF EXISTS [get_blog_name]")
                 .HasAnnotation("Sql:Custom:get_blog_name:Up", "CREATE OR ALTER PROCEDURE [get_blog_name] @id INT AS SELECT [Name] FROM [Blogs] WHERE [Id] = @id");
@@ -90,7 +90,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 
                     b.ToTable("PostBase");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("PostBase");
+                    b.HasDiscriminator().HasValue("PostBase");
 
                     b.UseTphMappingStrategy();
                 });
