@@ -88,7 +88,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Discriminator = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
+                    Discriminator = table.Column<string>(type: "text", nullable: false),
                     TextA = table.Column<string>(type: "text", nullable: true),
                     TextB = table.Column<string>(type: "text", nullable: true)
                 },

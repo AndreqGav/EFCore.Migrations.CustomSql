@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
 {
     [DbContext(typeof(PostgreSqlMigrationDbContext))]
-    [Migration("20260430141013_Initial")]
+    [Migration("20260430195738_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -19,7 +19,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("Sql:Custom:blog_names:Down", "DROP VIEW IF EXISTS public.blog_names")
                 .HasAnnotation("Sql:Custom:blog_names:Up", "CREATE OR REPLACE VIEW public.blog_names\nAS SELECT \"Id\", \"Name\" FROM \"Blogs\"")
@@ -116,8 +116,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
