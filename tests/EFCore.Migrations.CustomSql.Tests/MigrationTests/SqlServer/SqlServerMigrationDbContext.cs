@@ -79,7 +79,6 @@ public class SqlServerMigrationDbContext : DbContext
         modelBuilder.Entity<PostBase>(builder =>
         {
             builder.HasKey(entity => entity.Id);
-            builder.UseTphMappingStrategy();
         });
 
         modelBuilder.Entity<PostA>(builder => builder.HasBaseType<PostBase>());

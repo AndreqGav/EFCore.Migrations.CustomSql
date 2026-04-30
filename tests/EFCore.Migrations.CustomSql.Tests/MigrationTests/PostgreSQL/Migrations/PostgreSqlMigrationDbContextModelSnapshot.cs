@@ -16,7 +16,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "6.0.36")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("Sql:Custom:blog_names:Down", "DROP VIEW IF EXISTS public.blog_names")
                 .HasAnnotation("Sql:Custom:blog_names:Up", "CREATE OR REPLACE VIEW public.blog_names\nAS SELECT \"Id\", \"Name\" FROM \"Blogs\"")
@@ -26,8 +26,6 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                 .HasAnnotation("Sql:Custom:get_blog_url:Up", "CREATE OR REPLACE FUNCTION get_blog_url(id integer)\r\nRETURNS text\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\r\nEND;\r\n$$;");
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.HasSequence("BlogBaseSequence");
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Blog", b =>
                 {
@@ -63,44 +61,11 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("text");
 
-                    b.ToTable((string)null);
-
-                    b.ToView("blog_view", (string)null);
+                    b.ToView("blog_view");
 
                     b
                         .HasAnnotation("Sql:Custom:blog_view:Down", "DROP VIEW IF EXISTS blog_view;")
                         .HasAnnotation("Sql:Custom:blog_view:Up", "CREATE OR REPLACE VIEW blog_view AS\r\nSELECT * FROM \"Blogs\";");
-                });
-
-            modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleBase", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ArticleBase");
-
-                    b.UseTptMappingStrategy();
-                });
-
-            modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.BlogBase", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValueSql("nextval('\"BlogBaseSequence\"')");
-
-                    NpgsqlPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
-
-                    b.HasKey("Id");
-
-                    b.ToTable((string)null);
-
-                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.PostBase", b =>
@@ -113,16 +78,13 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("PostBase");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("PostBase");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Order", b =>
@@ -162,46 +124,6 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                         .HasAnnotation("Sql:Custom:set_order_defaults:Up", "CREATE OR REPLACE FUNCTION set_order_defaults()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nNEW.is_confirmed = false;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER set_order_defaults\r\nBEFORE INSERT ON \"Orders\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION set_order_defaults();");
                 });
 
-            modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleA", b =>
-                {
-                    b.HasBaseType("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleBase");
-
-                    b.Property<string>("ContentA")
-                        .HasColumnType("text");
-
-                    b.ToTable("ArticleA");
-                });
-
-            modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleB", b =>
-                {
-                    b.HasBaseType("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleBase");
-
-                    b.Property<string>("ContentB")
-                        .HasColumnType("text");
-
-                    b.ToTable("ArticleB");
-                });
-
-            modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.BlogA", b =>
-                {
-                    b.HasBaseType("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.BlogBase");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.ToTable("BlogA");
-                });
-
-            modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.BlogB", b =>
-                {
-                    b.HasBaseType("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.BlogBase");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.ToTable("BlogB");
-                });
-
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.PostA", b =>
                 {
                     b.HasBaseType("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.PostBase");
@@ -220,24 +142,6 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                         .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("PostB");
-                });
-
-            modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleA", b =>
-                {
-                    b.HasOne("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleBase", null)
-                        .WithOne()
-                        .HasForeignKey("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleA", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleB", b =>
-                {
-                    b.HasOne("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleBase", null)
-                        .WithOne()
-                        .HasForeignKey("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleB", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

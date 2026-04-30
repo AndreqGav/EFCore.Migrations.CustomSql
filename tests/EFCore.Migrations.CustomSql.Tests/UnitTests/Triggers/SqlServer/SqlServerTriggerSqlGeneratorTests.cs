@@ -296,27 +296,6 @@ public class SqlServerTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void GenerateCreateSql_Should_ContainsFullBody_WhenBodyIsRawString()
-    {
-        // Arrange
-        const string body = """
-                            IF NEW.name is null then
-                                 RETURN 1;
-                            END IF;
-
-                            RETURN 2;
-                            """;
-
-        var trigger = MakeTrigger(name: "fn_on_insert", body);
-
-        // Act
-        var sql = _generator.GenerateCreateSql(trigger);
-
-        // Assert
-        Assert.Contains(body, sql);
-    }
-
-    [Fact]
     public void GenerateCreateSql_WithSchema_Should_ContainQualifiedTableName()
     {
         // Arrange

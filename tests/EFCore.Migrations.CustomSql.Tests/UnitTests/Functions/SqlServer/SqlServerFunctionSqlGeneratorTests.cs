@@ -204,21 +204,4 @@ public class SqlServerFunctionSqlGeneratorTests
 
         Assert.Contains("line1;\r\nline2;", sql);
     }
-
-    [Fact]
-    public void GenerateCreateSql_Should_ContainsFullBody_WhenBodyIsRawString()
-    {
-        const string body = """
-                            IF @userId IS NULL
-                                RETURN 0;
-
-                            RETURN 1;
-                            """;
-
-        var function = MakeFunction(body: body);
-
-        var sql = _generator.GenerateCreateSql(function);
-
-        Assert.Contains(body, sql);
-    }
 }

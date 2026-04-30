@@ -127,22 +127,4 @@ public class PostgreSqlViewSqlGeneratorTests
 
         Assert.Contains("SELECT\r\n1", sql);
     }
-
-    [Fact]
-    public void GenerateCreateSql_Should_ContainsFullBody_WhenBodyIsRawString()
-    {
-        const string body = """
-                            SELECT
-                                id,
-                                name
-                            FROM users
-                            WHERE active = true
-                            """;
-
-        var view = MakeView(body: body);
-
-        var sql = _generator.GenerateCreateSql(view);
-
-        Assert.Contains(body, sql);
-    }
 }

@@ -213,22 +213,4 @@ public class PostgreSqlFunctionSqlGeneratorTests
 
         Assert.Contains("line1;\r\nline2;", sql);
     }
-
-    [Fact]
-    public void GenerateCreateSql_Should_ContainsFullBody_WhenBodyIsRawString()
-    {
-        const string body = """
-                            IF p_user_id IS NULL THEN
-                                RETURN 0;
-                            END IF;
-
-                            RETURN 1;
-                            """;
-
-        var function = MakeFunction(body: body);
-
-        var sql = _generator.GenerateCreateSql(function);
-
-        Assert.Contains(body, sql);
-    }
 }

@@ -4,10 +4,8 @@
 
 namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 {
-    /// <inheritdoc />
     public partial class Initial : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -48,7 +46,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TextA = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TextB = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -68,7 +66,6 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
             migrationBuilder.Sql("CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\r\nON [Orders]\r\nAFTER INSERT\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\r\nEND;");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [get_blog_name]");

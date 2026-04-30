@@ -1,57 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 
 #pragma warning disable EF1001
 
 namespace EFCore.Migrations.Abstractions;
 
-public class CompositeMigrationsModelDiffer : IMigrationsModelDiffer
+public class CompositeMigrationsModelDiffer : MigrationsModelDiffer
 {
-    private readonly IMigrationsModelDiffer _baseDiffer;
-
     private readonly IReadOnlyList<IMigrationOperationModifier> _modifiers;
 
-    public CompositeMigrationsModelDiffer(
-        IRelationalTypeMappingSource typeMappingSource,
-        IMigrationsAnnotationProvider migrationsAnnotationProvider,
-        IRelationalAnnotationProvider relationalAnnotationProvider,
-        IRowIdentityMapFactory rowIdentityMapFactory,
+    public CompositeMigrationsModelDiffer(IRelationalTypeMappingSource typeMappingSource,
+        IMigrationsAnnotationProvider migrationsAnnotations, IChangeDetector changeDetector,
+        IUpdateAdapterFactory updateAdapterFactory,
         CommandBatchPreparerDependencies commandBatchPreparerDependencies,
         IEnumerable<IMigrationOperationModifier> modifiers)
+        : base(typeMappingSource, migrationsAnnotations, changeDetector, updateAdapterFactory,
+            commandBatchPreparerDependencies)
     {
-        _baseDiffer = new MigrationsModelDiffer(typeMappingSource, migrationsAnnotationProvider, relationalAnnotationProvider,
-            rowIdentityMapFactory,
-            commandBatchPreparerDependencies);
-
         _modifiers = modifiers.ToList();
     }
 
-    public bool HasDifferences(IRelationalModel source, IRelationalModel target)
+    public override IReadOnlyList<MigrationOperation> GetDifferences(IRelationalModel source,
+        IRelationalModel target)
     {
-        if (_baseDiffer.HasDifferences(source, target))
-        {
-            return true;
-        }
-
-        var operations = _baseDiffer.GetDifferences(source, target);
-
-        foreach (var modifier in _modifiers)
-        {
-            operations = modifier.ModifyOperations(operations, source, target);
-        }
-
-        return operations.Any();
-    }
-
-    public IReadOnlyList<MigrationOperation> GetDifferences(IRelationalModel source, IRelationalModel target)
-    {
-        var operations = _baseDiffer.GetDifferences(source, target);
+        var operations = base.GetDifferences(source, target);
 
         foreach (var modifier in _modifiers)
         {

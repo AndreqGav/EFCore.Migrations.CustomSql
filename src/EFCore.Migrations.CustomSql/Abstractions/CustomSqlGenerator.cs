@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using EFCore.Migrations.CustomSql.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -63,7 +64,9 @@ public abstract class CustomSqlGenerator
 
         var metadata = _modelBuilder.Entity<TEntity>().Metadata;
 
-        var columnName = metadata.FindProperty(propertyName)?.GetColumnName();
+        var tableName = metadata.GetTableName()!;
+        var schema = metadata.GetSchema()!;
+        var columnName = metadata.FindProperty(propertyName)?.GetColumnName(StoreObjectIdentifier.Table(tableName, schema));
 
         return columnName is not null ? _sqlGenerationHelper.DelimitIdentifier(columnName) : null;
     }

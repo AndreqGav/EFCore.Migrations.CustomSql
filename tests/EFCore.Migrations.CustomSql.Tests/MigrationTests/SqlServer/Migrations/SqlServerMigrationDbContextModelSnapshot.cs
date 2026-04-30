@@ -16,12 +16,12 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "6.0.36")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("Sql:Custom:get_blog_name:Down", "DROP PROCEDURE IF EXISTS [get_blog_name]")
                 .HasAnnotation("Sql:Custom:get_blog_name:Up", "CREATE OR ALTER PROCEDURE [get_blog_name] @id INT AS SELECT [Name] FROM [Blogs] WHERE [Id] = @id");
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Blog", b =>
                 {
@@ -29,7 +29,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -39,15 +39,11 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Blogs", t =>
-                        {
-                            t.HasTrigger("trg_blog_log_changes");
-                        });
+                    b.ToTable("Blogs");
 
                     b
                         .HasAnnotation("Sql:Custom:trg_blog_log_changes:Down", "DROP TRIGGER IF EXISTS [trg_blog_log_changes];")
-                        .HasAnnotation("Sql:Custom:trg_blog_log_changes:Up", "CREATE OR ALTER TRIGGER [trg_blog_log_changes]\r\nON [Blogs]\r\nAFTER INSERT, UPDATE\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\n-- log blog insert or update\r\nEND;")
-                        .HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                        .HasAnnotation("Sql:Custom:trg_blog_log_changes:Up", "CREATE OR ALTER TRIGGER [trg_blog_log_changes]\r\nON [Blogs]\r\nAFTER INSERT, UPDATE\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\n-- log blog insert or update\r\nEND;");
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.BlogView", b =>
@@ -61,9 +57,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable((string)null);
-
-                    b.ToView("blog_view", (string)null);
+                    b.ToView("blog_view");
 
                     b
                         .HasAnnotation("Sql:Custom:blog_view:Down", "DROP VIEW IF EXISTS blog_view")
@@ -76,20 +70,17 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("PostBase");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("PostBase");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Order", b =>
@@ -98,7 +89,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("Category")
                         .HasColumnType("int");
@@ -120,19 +111,13 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders", t =>
-                        {
-                            t.HasTrigger("trg_order_prevent_negative_amount");
-
-                            t.HasTrigger("trg_order_set_confirmed");
-                        });
+                    b.ToTable("Orders");
 
                     b
                         .HasAnnotation("Sql:Custom:trg_order_prevent_negative_amount:Down", "DROP TRIGGER IF EXISTS [trg_order_prevent_negative_amount];")
                         .HasAnnotation("Sql:Custom:trg_order_prevent_negative_amount:Up", "CREATE OR ALTER TRIGGER [trg_order_prevent_negative_amount]\r\nON [Orders]\r\nAFTER UPDATE\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\nIF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\r\n    THROW 50001, 'Amount must not be negative', 1;\r\nEND;")
                         .HasAnnotation("Sql:Custom:trg_order_set_confirmed:Down", "DROP TRIGGER IF EXISTS [trg_order_set_confirmed];")
-                        .HasAnnotation("Sql:Custom:trg_order_set_confirmed:Up", "CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\r\nON [Orders]\r\nAFTER INSERT\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\r\nEND;")
-                        .HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                        .HasAnnotation("Sql:Custom:trg_order_set_confirmed:Up", "CREATE OR ALTER TRIGGER [trg_order_set_confirmed]\r\nON [Orders]\r\nAFTER INSERT\r\nAS\r\nBEGIN\r\nSET NOCOUNT ON;\r\nUPDATE [Orders] SET [IsConfirmed] = 0 WHERE [Id] IN (SELECT [Id] FROM inserted)\r\nEND;");
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.PostA", b =>

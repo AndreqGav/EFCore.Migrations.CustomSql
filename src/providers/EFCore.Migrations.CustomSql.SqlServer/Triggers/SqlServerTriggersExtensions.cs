@@ -151,6 +151,5 @@ public static class SqlServerTriggersExtensions
         };
 
         entityTypeBuilder.AddTriggerAnnotation(trigger);
-        entityTypeBuilder.Metadata.AddTrigger(name);
     }
 }
