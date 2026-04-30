@@ -2,15 +2,8 @@
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <PackageId>EFCore.Migrations.Abstractions</PackageId>
-        <Title>Abstractions</Title>
-        <Version>10.0.0</Version>
-        <Authors>AndreqGav</Authors>
-        <Product>EFCore.Migrations.CustomSql</Product>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <RepositoryUrl>https://github.com/AndreqGav/EFCore.Migrations.CustomSql</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Copyright>Copyright (c) Андрей Гаврилов 2026</Copyright>
+        <Title>EFCore.Migrations.Abstractions</Title>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>

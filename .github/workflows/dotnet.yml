@@ -1,13 +1,15 @@
 name: Push Nuget Packages
 
 on:
-  push:
-    branches: [ "net-10" ]
   workflow_dispatch:
     inputs:
+      version:
+        description: 'Package version (e.g., 1.0.5)'
+        required: true
+        default: '1.0.0-preview'
       logLevel:
         description: 'Log level'
-        required: true
+        required: false
         default: 'warning'
 
 jobs:
