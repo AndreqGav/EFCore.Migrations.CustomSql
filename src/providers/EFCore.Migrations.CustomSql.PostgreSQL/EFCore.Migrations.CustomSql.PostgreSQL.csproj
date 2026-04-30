@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <PackageId>EFCore.Migrations.CustomSql.PostgreSQL</PackageId>
         <Title>EFCore.Migrations.CustomSql.PostgreSQL</Title>
         <IsPackable>true</IsPackable>
@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>
