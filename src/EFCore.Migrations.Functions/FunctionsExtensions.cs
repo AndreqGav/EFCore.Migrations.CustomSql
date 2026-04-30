@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using EFCore.Migrations.CustomSql.Constants;
+using EFCore.Migrations.Functions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EFCore.Migrations.Functions;
+// ReSharper disable once CheckNamespace
+namespace EFCore.Migrations.CustomSql;
 
 public static class FunctionsExtensions
 {

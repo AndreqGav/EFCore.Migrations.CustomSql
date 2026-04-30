@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace EFCore.Migrations.CustomSql;
 
-public class CustomSqlMigrationOperationModifier : IMigrationOperationModifier
+internal class CustomSqlMigrationOperationModifier : IMigrationOperationModifier
 {
     public IReadOnlyList<MigrationOperation> ModifyOperations(IReadOnlyList<MigrationOperation> operations,
         IRelationalModel source, IRelationalModel target)

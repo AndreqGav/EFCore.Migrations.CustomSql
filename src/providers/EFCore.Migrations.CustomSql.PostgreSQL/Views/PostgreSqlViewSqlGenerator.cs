@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.PostgreSQL.Views;
 
-public class PostgreSqlViewSqlGenerator : ISqlObjectGenerator<ViewObject>
+internal class PostgreSqlViewSqlGenerator : ISqlObjectGenerator<ViewObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 

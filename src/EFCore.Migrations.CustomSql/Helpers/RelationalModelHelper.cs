@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EFCore.Migrations.CustomSql.Helpers;
 
-public static class RelationalModelHelper
+static internal class RelationalModelHelper
 {
     // т.к. для каждого SQL сущесвутет две операции (Up и Down) и для текстового представление в миграции
     // они помещены в разные аннотации.

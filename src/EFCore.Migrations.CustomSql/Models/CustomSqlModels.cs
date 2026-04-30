@@ -1,13 +1,13 @@
 ﻿namespace EFCore.Migrations.CustomSql.Models;
 
-public interface ISqlModel
+internal interface ISqlModel
 {
     string Name { get; }
 
     string Sql { get; }
 }
 
-public class SqlUpModel : ISqlModel
+internal class SqlUpModel : ISqlModel
 {
     public SqlUpModel(string name, string sql)
     {
@@ -20,7 +20,7 @@ public class SqlUpModel : ISqlModel
     public string Sql { get; }
 }
 
-public class SqlDownModel : ISqlModel
+internal class SqlDownModel : ISqlModel
 {
     public SqlDownModel(string name, string sql)
     {
@@ -33,7 +33,7 @@ public class SqlDownModel : ISqlModel
     public string Sql { get; }
 }
 
-public class CustomSqlAnnotation
+internal class CustomSqlAnnotation
 {
     public string Name { get; }
 

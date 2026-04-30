@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.SqlServer.Functions;
 
-public class SqlServerFunctionSqlGenerator : ISqlObjectGenerator<FunctionObject>
+internal class SqlServerFunctionSqlGenerator : ISqlObjectGenerator<FunctionObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 
