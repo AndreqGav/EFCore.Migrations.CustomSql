@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Package version (e.g., 1.0.5)'
+        description: 'Package version'
         required: true
-        default: '1.0.0-preview'
+        default: '10.0.0-preview'
       logLevel:
         description: 'Log level'
         required: false
