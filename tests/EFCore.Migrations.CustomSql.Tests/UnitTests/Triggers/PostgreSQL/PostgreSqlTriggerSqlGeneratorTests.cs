@@ -48,6 +48,23 @@ public class PostgreSqlTriggerSqlGeneratorTests
                 .ReplaceLineEndings(),
             sql);
     }
+    
+    [Fact]
+    public void GenerateCreateSql_Should_ReturnExactFullSql_WhenBodyWrapped()
+    {
+        // Arrange
+        var trigger = MakeTrigger(name: "my_trigger", table: "my_table", body: "BEGIN PERFORM 2; RETURN NEW; END;", time: TriggerTimeEnum.After,
+            operation: TriggerOperationEnum.Update);
+
+        // Act
+        var sql = _generator.GenerateCreateSql(trigger);
+
+        // Assert
+        Assert.Equal(
+            "CREATE OR REPLACE FUNCTION \"my_trigger\"()\nRETURNS trigger\nLANGUAGE plpgsql\nAS $$\nBEGIN PERFORM 2; RETURN NEW; END;\n$$;\n\nCREATE TRIGGER \"my_trigger\"\nAFTER UPDATE ON \"my_table\"\nFOR EACH ROW\nEXECUTE FUNCTION \"my_trigger\"();"
+                .ReplaceLineEndings(),
+            sql);
+    }
 
     [Fact]
     public void GenerateCreateSql_Should_ContainFunctionDefinition()
@@ -320,7 +337,7 @@ public class PostgreSqlTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void SqlUpModel_Sql_Should_NotNormalizeCrLfToLf()
+    public void GenerateCreateSql_Should_NotNormalizeCrLfToLf()
     {
         // Arrange
         var trigger = MakeTrigger(name: "fn_on_insert", body: "line1;\r\nline2;");
@@ -333,7 +350,7 @@ public class PostgreSqlTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void SqlUpModel_Sql_Should_ContainsFullBody()
+    public void GenerateCreateSql_Should_ContainsFullBody_WhenBodyIsRawString()
     {
         // Arrange
         const string body = """

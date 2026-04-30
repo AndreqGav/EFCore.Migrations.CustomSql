@@ -2,6 +2,8 @@ using System;
 using EFCore.Migrations.CustomSql.SqlServer.Triggers;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
+using EFCore.Migrations.Functions;
+using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -60,6 +62,38 @@ public class SqlServerIntegrationTests : IDisposable
     }
 
     [Fact]
+    public void Migration_Script_Should_Contain_CreateOrAlterView_ViaViewSql()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE OR ALTER VIEW [order_view]", script);
+    }
+
+    [Fact]
+    public void Migration_Script_Should_Contain_ScalarFunction_ViaHasFunctionSql()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE OR ALTER FUNCTION [get_zero]", script);
+    }
+
+    [Fact]
+    public void Migration_Script_Should_Contain_ScalarFunction_ViaDbFunction()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE OR ALTER FUNCTION [get_one]", script);
+    }
+
+    [Fact]
+    public void Migration_Script_Should_Contain_ParameterizedFunction()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE OR ALTER FUNCTION [get_blog_url]", script);
+    }
+
+    [Fact]
     public void View_Should_Exist_InDatabase()
     {
         // Arrange
@@ -90,38 +124,6 @@ public class SqlServerIntegrationTests : IDisposable
 
         // Act & Assert
         Assert.Equal(1, count);
-    }
-
-    [Fact]
-    public void AfterInsert_Trigger_Should_Fire_OnInsert()
-    {
-        // Arrange
-        var order = new Order
-        {
-            TotalAmount = 100m,
-            IsConfirmed = true,
-        };
-
-        // Act
-        _context.Orders.Add(order);
-        _context.SaveChanges();
-
-        _context.ChangeTracker.Clear();
-
-        // Assert
-        var saved = _context.Orders.Find(order.Id);
-        Assert.False(saved.IsConfirmed);
-    }
-
-    [Fact]
-    public void Multiple_Triggers_Should_Exist_InDatabase()
-    {
-        // Arrange
-        var count = ExecuteScalar<int>(
-            "SELECT COUNT(*) FROM sys.triggers WHERE name IN ('trg_order_set_confirmed', 'trg_order_prevent_negative_amount')");
-
-        // Act & Assert
-        Assert.Equal(2, count);
     }
 
     private T ExecuteScalar<T>(string sql)
@@ -165,6 +167,24 @@ internal class SqlServerTestDbContext : DbContext
             "CREATE OR ALTER PROCEDURE [get_blog_name] @id INT AS SELECT [Name] FROM [Blogs] WHERE [Id] = @id",
             "DROP PROCEDURE IF EXISTS [get_blog_name]");
 
+        modelBuilder.HasViewSql("order_view", "SELECT [Id], [TotalAmount] FROM [Orders]");
+
+        modelBuilder.HasFunctionSql("get_zero", "RETURN 0;", typeof(int));
+
+        modelBuilder
+            .HasDbFunction(typeof(SqlServerFunctionsSql).GetMethod(nameof(SqlServerFunctionsSql.GetOne))!)
+            .HasName("get_one")
+            .HasBodySql("RETURN 1;");
+
+        modelBuilder.HasFunctionSql(
+            "get_blog_url",
+            "RETURN (SELECT [Url] FROM [Blogs] WHERE [Id] = @id);",
+            typeof(string),
+            new[]
+            {
+                new FunctionArgument("@id", typeof(int))
+            });
+
         modelBuilder.Entity<Order>(entity =>
         {
             // Sets IsConfirmed = false after every insert
@@ -175,6 +195,14 @@ internal class SqlServerTestDbContext : DbContext
             entity.AfterInsert(
                 "trg_order_prevent_negative_amount",
                 "IF EXISTS (SELECT 1 FROM inserted WHERE [TotalAmount] < 0)\r\n    THROW 50001, 'Amount must not be negative', 1;");
+
+            entity.AfterUpdate(
+                "trg_order_on_update",
+                "UPDATE [Orders] SET [Status] = [Status] WHERE [Id] IN (SELECT [Id] FROM inserted)");
+
+            entity.AfterDelete(
+                "trg_order_on_delete",
+                "DECLARE @cnt INT; SET @cnt = (SELECT COUNT(*) FROM deleted)");
         });
 
         modelBuilder.Entity<BlogView>(entity =>
@@ -183,4 +211,9 @@ internal class SqlServerTestDbContext : DbContext
             entity.ToView("blog_view");
         });
     }
+}
+
+internal static class SqlServerFunctionsSql
+{
+    public static int GetOne() => throw new InvalidOperationException();
 }

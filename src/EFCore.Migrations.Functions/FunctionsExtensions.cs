@@ -42,7 +42,7 @@ public static class FunctionsExtensions
         return modelBuilder;
     }
 
-    public static DbFunctionBuilder HasSqlBody(this DbFunctionBuilder builder, string body)
+    public static DbFunctionBuilder HasBodySql(this DbFunctionBuilder builder, string body)
     {
         var conventionBuilder = builder.GetInfrastructure();
         var modelBuilder = conventionBuilder.ModelBuilder;

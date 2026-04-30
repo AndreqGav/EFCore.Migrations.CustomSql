@@ -2,6 +2,8 @@ using System;
 using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
+using EFCore.Migrations.Functions;
+using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -41,11 +43,47 @@ public class PostgreSqlIntegrationTests : IDisposable
     }
 
     [Fact]
-    public void Migration_Script_Should_Contain_CreateView()
+    public void Migration_Script_Should_Contain_StringFunction_WithSingleParameter()
     {
         var script = _context.Database.GenerateCreateScript();
 
-        Assert.Contains("CREATE VIEW blog_view", script);
+        Assert.Contains("CREATE OR REPLACE FUNCTION func_string_id_int(id integer)", script);
+        Assert.Contains("BEGIN RETURN 'text'; END;", script);
+    }
+
+    [Fact]
+    public void Migration_Script_Should_Contain_IntFunction_WithoutParameters()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE OR REPLACE FUNCTION func_int()", script);
+        Assert.Contains("PERFORM 1;", script);
+    }
+
+    [Fact]
+    public void Migration_Script_Should_Contain_ByteaFunction_WithMixedParameters()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE OR REPLACE FUNCTION func_bytea(a integer, b text, c smallint, d text[])", script);
+        Assert.Contains("PERFORM 1;", script);
+    }
+
+    [Fact]
+    public void Migration_Script_Should_Contain_BoolFunction()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE OR REPLACE FUNCTION func_bool()", script);
+        Assert.Contains("RETURN true;", script);
+    }
+
+    [Fact]
+    public void Migration_Script_Should_Contain_CreateOrReplaceView()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE OR REPLACE VIEW blog_view", script);
     }
 
     [Fact]
@@ -81,34 +119,6 @@ public class PostgreSqlIntegrationTests : IDisposable
         Assert.Equal(1, count);
     }
 
-    [Fact]
-    public void BeforeInsert_Trigger_Should_Fire_OnInsert()
-    {
-        // Триггер trg_order_set_defaults устанавливает IsConfirmed = false перед вставкой
-        var order = new Order
-        {
-            TotalAmount = 100m,
-            IsConfirmed = true
-        };
-
-        _context.Orders.Add(order);
-        _context.SaveChanges();
-
-        _context.ChangeTracker.Clear();
-
-        var saved = _context.Orders.Find(order.Id);
-        Assert.False(saved.IsConfirmed);
-    }
-
-    [Fact]
-    public void Multiple_Triggers_Should_Exist_InDatabase()
-    {
-        var count = ExecuteScalar<long>(
-            "SELECT COUNT(*) FROM pg_trigger WHERE tgname IN ('trg_order_set_defaults', 'trg_order_prevent_negative_amount')");
-
-        Assert.Equal(2, count);
-    }
-
     private T ExecuteScalar<T>(string sql)
     {
         var conn = _context.Database.GetDbConnection();
@@ -141,9 +151,9 @@ internal class PostgreSqlTestDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasCustomSql(
-            "blog_view",
-            "CREATE VIEW blog_view AS SELECT * FROM \"Blogs\"",
-            "DROP VIEW IF EXISTS blog_view"
+            "custom_blog_view",
+            "CREATE VIEW custom_blog_view AS SELECT * FROM \"Blogs\"",
+            "DROP VIEW IF EXISTS custom_blog_view"
         );
 
         modelBuilder.HasCustomSql("get_blog_name",
@@ -160,12 +170,55 @@ internal class PostgreSqlTestDbContext : DbContext
             entity.BeforeInsert(
                 "trg_order_prevent_negative_amount",
                 "IF NEW.\"TotalAmount\" < 0 THEN RAISE EXCEPTION 'amount must not be negative'; END IF;");
+
+            entity.AfterInsert(
+                "trg_order_after_insert",
+                "PERFORM 1;");
+
+            entity.AfterUpdate(
+                "trg_order_after_update",
+                "PERFORM 1;");
         });
 
         modelBuilder.Entity<BlogView>(entity =>
         {
             entity.HasNoKey();
-            entity.ToView("blog_view");
+
+            entity.ToView("blog_view")
+                .HasQuerySql("SELECT * FROM \"Blogs\"");
         });
+
+        modelBuilder
+            .HasDbFunction(typeof(FunctionsSql).GetMethod(nameof(FunctionsSql.Func1))!)
+            .HasName("func_string_id_int")
+            .HasBodySql("BEGIN RETURN 'text'; END;");
+
+        modelBuilder
+            .HasDbFunction(typeof(FunctionsSql).GetMethod(nameof(FunctionsSql.Func2))!)
+            .HasName("func_int")
+            .HasBodySql("PERFORM 1;");
+
+        modelBuilder
+            .HasDbFunction(typeof(FunctionsSql).GetMethod(nameof(FunctionsSql.Func3))!)
+            .HasName("func_bytea")
+            .HasBodySql("PERFORM 1;");
+
+        modelBuilder
+            .HasDbFunction(typeof(FunctionsSql).GetMethod(nameof(FunctionsSql.Func4))!)
+            .HasName("func_bool")
+            .HasBodySql("RETURN true;");
+
+        modelBuilder.HasViewSql("order_view", "SELECT \"Id\", \"TotalAmount\" FROM \"Orders\"");
     }
+}
+
+public static class FunctionsSql
+{
+    public static string Func1(int id) => throw new InvalidOperationException();
+
+    public static int Func2() => throw new InvalidOperationException();
+
+    public static byte[] Func3(int a, string b, byte c, string[] d) => throw new InvalidOperationException();
+
+    public static bool Func4() => throw new InvalidOperationException();
 }

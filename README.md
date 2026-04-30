@@ -1,160 +1,33 @@
-# EFCore.Migrations.Toolkit
+# EFCore.Migrations.CustomSql
 
-A collection of EF Core extension libraries for automatic database comments, custom SQL management, and trigger generation.
+EF Core extension for tracking custom SQL (views, functions, triggers, or any raw SQL) in the model and auto-generating `Up`/`Down` migration code.
+
+**Providers:** PostgreSQL, SQL Server
 
 ## Packages
 
-### [EFCore.Migrations.AutoComments](#efcoremigrationsautocomments-1)
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.AutoComments)](https://www.nuget.org/packages/EFCore.Migrations.AutoComments) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.AutoComments)](https://www.nuget.org/packages/EFCore.Migrations.AutoComments) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-Reads XML docs and sets table/column comments in migrations.
-
-### [EFCore.Migrations.CustomSql](#efcoremigrationscustomsql-1)
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.CustomSql)](https://www.nuget.org/packages/EFCore.Migrations.CustomSql) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.CustomSql)](https://www.nuget.org/packages/EFCore.Migrations.CustomSql) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-Tracks custom SQL in the EF model; auto-generates Up/Down migration code.
-
-### [EFCore.Migrations.Triggers](#efcoremigrationstriggers-1)
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.Triggers)](https://www.nuget.org/packages/EFCore.Migrations.Triggers) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.Triggers)](https://www.nuget.org/packages/EFCore.Migrations.Triggers) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-Provider-agnostic trigger abstraction for EF migrations.
-
-### [EFCore.Migrations.Triggers.PostgreSQL](#efcoremigrationstriggerspostgresql-1)
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.Triggers.PostgreSQL)](https://www.nuget.org/packages/EFCore.Migrations.Triggers.PostgreSQL) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.Triggers.PostgreSQL)](https://www.nuget.org/packages/EFCore.Migrations.Triggers.PostgreSQL) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-PostgreSQL trigger provider (depends on CustomSql + Triggers).
-
-### [EFCore.Migrations.Triggers.SqlServer](#efcoremigrationstriggerssqlserver-1)
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.Triggers.SqlServer)](https://www.nuget.org/packages/EFCore.Migrations.Triggers.SqlServer) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.Triggers.SqlServer)](https://www.nuget.org/packages/EFCore.Migrations.Triggers.SqlServer) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-SQL Server trigger provider (depends on CustomSql + Triggers).
+| Package | Description | NuGet |
+|---------|-------------|-------|
+| `EFCore.Migrations.CustomSql` | Core — raw SQL in migrations. No provider needed. | [![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.CustomSql)](https://www.nuget.org/packages/EFCore.Migrations.CustomSql) |
+| `EFCore.Migrations.CustomSql.PostgreSQL` | Provider for views, functions, triggers on PostgreSQL | [![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.CustomSql.PostgreSQL)](https://www.nuget.org/packages/EFCore.Migrations.CustomSql.PostgreSQL) |
+| `EFCore.Migrations.CustomSql.SqlServer` | Provider for views, functions, triggers on SQL Server | [![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.CustomSql.SqlServer)](https://www.nuget.org/packages/EFCore.Migrations.CustomSql.SqlServer) |
 
 ---
 
-## EFCore.Migrations.AutoComments
+## How it works
 
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.AutoComments)](https://www.nuget.org/packages/EFCore.Migrations.AutoComments) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.AutoComments)](https://www.nuget.org/packages/EFCore.Migrations.AutoComments) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
+Custom SQL entries are stored as annotations on the EF model. When running `dotnet ef migrations add`, the differ detects changes and generates:
 
-Automatically applies database comments to tables and columns based on XML documentation. Comments flow from `<summary>` tags directly into migrations.
+- **Up SQL** — executed at end of `Up`, after schema changes
+- **Down SQL** — executed at start of `Down`, before schema rollback
 
-### Installation
-
-```
-dotnet add package EFCore.Migrations.AutoComments
-```
-
-### Prerequisites
-
-Enable XML documentation generation in your project:
-
-```xml
-<PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-</PropertyGroup>
-```
-
-### Registration
-
-```csharp
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options
-        .UseNpgsql(...)
-        .UseAutoComments());
-```
-
-### XML file path resolution
-
-If no file is specified, XML docs are auto-discovered by assembly name.
-
-```csharp
-// Auto-discover (default)
-options.UseAutoComments();
-
-// Single file
-options.UseAutoComments("MyApp.xml");
-
-// Multiple files - merges docs from several assemblies
-options.UseAutoComments("MyApp.xml", "SharedLibrary.xml");
-```
-
-### Example
-
-```csharp
-/// <summary>
-/// Represents an animal in the shelter.
-/// </summary>
-public class Animal
-{
-    /// <summary>
-    /// Unique identifier.
-    /// </summary>
-    public int Id { get; set; }
-
-    /// <summary>
-    /// Animal name.
-    /// </summary>
-    public string Name { get; set; }
-
-    /// <summary>
-    /// Type of animal.
-    /// </summary>
-    public AnimalType Type { get; set; }
-}
-
-/// <summary>
-/// Animal type.
-/// </summary>
-public enum AnimalType
-{
-    /// <summary>Dog.</summary>
-    Dog,
-
-    /// <summary>Cat.</summary>
-    Cat,
-
-    /// <summary>Fish.</summary>
-    Fish
-}
-```
-
-Generated migration comments:
-
-```sql
-COMMENT ON TABLE "Animals" IS 'Represents an animal in the shelter.';
-COMMENT ON COLUMN "Animals"."Id" IS 'Unique identifier.';
-COMMENT ON COLUMN "Animals"."Name" IS 'Animal name.';
-COMMENT ON COLUMN "Animals"."Type" IS 'Type of animal.';
-```
-
-With `options.UseAutoComments(o => o.AddEnumDescriptions())`, the `Type` column comment becomes:
-
-```
-Type of animal.
-
-0 - Dog.
-1 - Cat.
-2 - Fish.
-```
-
-For string-backed enums, the enum member name is used instead of the numeric value:
-
-```
-Status.
-
-Active - Active account.
-Suspended - Temporarily suspended.
-Closed - Account closed.
-```
-
-Use `[AutoCommentEnumDescription]` on a property to enable enum descriptions for that property only, or `[IgnoreAutoCommentEnumDescription]` to exclude it when global mode is active.
+Model snapshot stores annotation names and SQL bodies, so changes are detected on next migration.
 
 ---
 
 ## EFCore.Migrations.CustomSql
 
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.CustomSql)](https://www.nuget.org/packages/EFCore.Migrations.CustomSql) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.CustomSql)](https://www.nuget.org/packages/EFCore.Migrations.CustomSql) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-Tracks custom SQL scripts (views, functions, indexes, etc.) as part of the EF model. When you run `dotnet ef migrations add`, the library detects changes and automatically generates the correct `Up` / `Down` migration code.
+Core package. Tracks raw SQL entries in the EF model.
 
 ### Installation
 
@@ -164,6 +37,8 @@ dotnet add package EFCore.Migrations.CustomSql
 
 ### Registration
 
+No provider needed. Works with any database.
+
 ```csharp
 builder.Services.AddDbContext<AppDbContext>(options =>
     options
@@ -171,15 +46,76 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         .UseCustomSql());
 ```
 
-### How it works
+For views, functions, and triggers — register provider inside `UseCustomSql`:
 
-Each custom SQL entry has:
+```csharp
+// PostgreSQL
+options.UseNpgsql(...).UseCustomSql(o => o.UseNpgsql());
 
-- **Name** — unique identifier used by the migration differ to detect changes.
-- **Up SQL** — SQL executed when migrating forward. Added at the **end** of the `Up` method, after schema changes.
-- **Down SQL** — SQL executed when rolling back. Added at the **beginning** of the `Down` method, before schema rollback.
+// SQL Server
+options.UseSqlServer(...).UseCustomSql(o => o.UseSqlServer());
+```
 
 ### Basic usage
+
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.HasCustomSql(
+        name: "animals_view",
+        sqlUp: "CREATE VIEW animals_view AS SELECT * FROM \"Animals\"",
+        sqlDown: "DROP VIEW IF EXISTS animals_view");
+}
+```
+
+### Generated migration
+
+```csharp
+public partial class Initial : Migration
+{
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.CreateTable("Animals", ...);
+
+        // custom SQL runs after schema
+        migrationBuilder.Sql("CREATE VIEW animals_view AS SELECT * FROM \"Animals\"");
+    }
+
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        // custom SQL runs before schema rollback
+        migrationBuilder.Sql("DROP VIEW IF EXISTS animals_view");
+
+        migrationBuilder.DropTable("Animals");
+    }
+}
+```
+
+### Snapshot
+
+```csharp
+modelBuilder.HasAnnotation("Sql:Custom:animals_view:Down", "DROP VIEW IF EXISTS ...");
+modelBuilder.HasAnnotation("Sql:Custom:animals_view:Up", "CREATE VIEW ...");
+```
+
+---
+
+## Views
+
+### Register standalone view
+
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.HasViewSql(
+        name: "animals_view",
+        sql: "SELECT id, name FROM \"Animals\" WHERE \"IsActive\" = true");
+}
+```
+
+### Register view mapped to entity
+
+Use `ToView()` first, then `HasQuerySql()`:
 
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -187,44 +123,161 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     modelBuilder.Entity<AnimalView>(entity =>
     {
         entity.HasNoKey();
-        entity.ToView("animals_view");
-
-        entity.HasCustomSql(
-            name: "animals_view",
-            upSql: "CREATE VIEW animals_view AS SELECT * FROM \"Animals\" WHERE \"AnimalType\" = 1",
-            downSql: "DROP VIEW IF EXISTS animals_view");
+        
+        entity
+            .ToView("animals_view") 
+            .HasQuerySql("SELECT id, name FROM \"Animals\" WHERE \"IsActive\" = true");
     });
 }
 ```
 
-### Generated migration example
+---
+
+## Functions
+
+The body can start with just the statements — `BEGIN`/`END` is added automatically. Or provide a full block starting with `BEGIN` or `DECLARE` to skip auto-wrapping.
+
+### Register function with `HasFunctionSql`
 
 ```csharp
-public partial class Initial : Migration
+protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
-    protected override void Up(MigrationBuilder migrationBuilder)
-    {
-        // schema migrations first...
-        migrationBuilder.CreateTable("Animals", ...);
+    // short body — BEGIN/END auto-added
+    modelBuilder.HasFunctionSql(
+        name: "get_active_count",
+        body: "RETURN (SELECT COUNT(*) FROM \"Animals\" WHERE \"IsActive\" = true);");
 
-        // custom SQL at the end
-        migrationBuilder.Sql("CREATE VIEW animals_view AS SELECT * FROM \"Animals\" WHERE \"AnimalType\" = 1");
-    }
-
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-        // custom SQL rollback first
-        migrationBuilder.Sql("DROP VIEW IF EXISTS animals_view");
-
-        // schema rollback after
-        migrationBuilder.DropTable("Animals");
-    }
+    // full block — used as-is
+    modelBuilder.HasFunctionSql(
+        name: "get_active_count_full",
+        body: """
+            DECLARE
+                cnt integer;
+            BEGIN
+                SELECT COUNT(*) INTO cnt FROM "Animals" WHERE "IsActive" = true;
+                RETURN cnt;
+            END;
+            """);
 }
 ```
 
-### Dynamic SQL with `CustomSqlGenerator`
+### Register function with `HasBodySql`
 
-`CustomSqlGenerator` provides helper methods to resolve actual table and column names from the EF model. When a property or entity is renamed in the model, the generated SQL stays in sync.
+Use when function already registered via `HasDbFunction` — `HasBodySql` attaches SQL body, takes name/args/return type from `DbFunctionBuilder`:
+
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.HasDbFunction(typeof(AppDbContext).GetMethod(nameof(GetAnimalCount)))
+        .HasBodySql("RETURN (SELECT COUNT(*) FROM \"Animals\" WHERE \"Type\" = type AND \"IsActive\" = is_active);");
+}
+```
+
+Where the CLR method:
+
+```csharp
+public static int GetAnimalCount(int type, bool is_active) => throw new NotSupportedException();
+```
+
+---
+
+## Triggers
+
+### Installation
+
+```
+dotnet add package EFCore.Migrations.CustomSql.PostgreSQL
+# or
+dotnet add package EFCore.Migrations.CustomSql.SqlServer
+```
+
+### Registration
+
+Same as for views and functions — register provider inside `UseCustomSql`:
+
+```csharp
+// PostgreSQL
+options.UseNpgsql(...).UseCustomSql(o => o.UseNpgsql());
+
+// SQL Server
+options.UseSqlServer(...).UseCustomSql(o => o.UseSqlServer());
+```
+
+### Usage (PostgreSQL)
+
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<Figure>(entity =>
+    {
+        entity.BeforeInsert(
+            name: "set_square",
+            body: "new.square = 0;");
+
+        entity.BeforeUpdate(
+            name: "prevent_negative_square",
+            body: "IF new.square < 0 THEN RAISE EXCEPTION 'square must be non-negative'; END IF;");
+
+        entity.AfterInsert(
+            name: "audit_insert",
+            body: "INSERT INTO audit_log(table_name, action) VALUES ('Figures', 'INSERT');");
+    });
+}
+```
+
+### Generated migration (PostgreSQL)
+
+```csharp
+migrationBuilder.Sql("""
+    CREATE OR REPLACE FUNCTION set_square()
+    RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+        new.square = 0;
+        RETURN NEW;
+    END;
+    $$;
+
+    CREATE TRIGGER set_square
+    BEFORE INSERT ON "Figures"
+    FOR EACH ROW
+    EXECUTE FUNCTION set_square();
+    """);
+```
+
+Rollback:
+
+```sql
+DROP FUNCTION set_square() CASCADE;
+```
+
+### SQL Server triggers
+
+Generated SQL:
+
+```sql
+CREATE OR ALTER TRIGGER [trigger_name]
+ON [TableName]
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    -- body here
+END;
+```
+
+Rollback:
+
+```sql
+DROP TRIGGER [trigger_name];
+```
+
+---
+
+## Dynamic SQL with `CustomSqlGenerator`
+
+`CustomSqlGenerator` resolves actual table/column names from EF model. Renames in model auto-update generated SQL.
 
 ```csharp
 public class MyCustomSqlGenerator : CustomSqlGenerator
@@ -247,8 +300,6 @@ public class MyCustomSqlGenerator : CustomSqlGenerator
 }
 ```
 
-Use in `OnModelCreating`:
-
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
@@ -256,112 +307,12 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 
     modelBuilder.HasCustomSql(
         name: "animals_species_view",
-        upSql: gen.Up(),
-        downSql: gen.Down());
+        sqlUp: gen.Up(),
+        sqlDown: gen.Down());
 }
 ```
 
----
-
-## EFCore.Migrations.Triggers
-
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.Triggers)](https://www.nuget.org/packages/EFCore.Migrations.Triggers) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.Triggers)](https://www.nuget.org/packages/EFCore.Migrations.Triggers) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-Provider-agnostic trigger abstraction built on top of `EFCore.Migrations.CustomSql`. Define triggers in `OnModelCreating` using typed extension methods — the concrete provider (PostgreSQL, SQL Server) generates the final SQL.
-
-### Installation
-
-Install the provider package — it pulls in this package automatically:
-- [EFCore.Migrations.Triggers.PostgreSQL](#efcoremigrationstriggerspostgresql-1)
-- [EFCore.Migrations.Triggers.SqlServer](#efcoremigrationstriggerssqlserver-1)
-
-### Registration
-
-```csharp
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options
-        .UseNpgsql(..., o => o.UseTriggers()));
-```
-
-### How it works
-
-Call extension methods on the entity builder inside `OnModelCreating`. Each method accepts a unique trigger name and the trigger body.
-
-### Usage
-
-```csharp
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<Figure>(entity =>
-    {
-        entity.BeforeInsert(
-            name: "set_square",
-            body: "new.square = 0;");
-
-        entity.BeforeUpdate(
-            name: "prevent_negative_square",
-            body: "IF new.square < 0 THEN RAISE EXCEPTION 'square must be non-negative'; END IF;");
-    });
-}
-```
-
-### Generated migration example
-
-```csharp
-public partial class Initial : Migration
-{
-    protected override void Up(MigrationBuilder migrationBuilder)
-    {
-        migrationBuilder.CreateTable("Figures", ...);
-
-        migrationBuilder.Sql("""
-            CREATE OR REPLACE FUNCTION set_square()
-            RETURNS trigger
-            LANGUAGE plpgsql
-            AS $$
-            BEGIN
-                new.square = 0;
-                RETURN NEW;
-            END;
-            $$;
-
-            CREATE TRIGGER set_square
-            BEFORE INSERT ON "Figures"
-            FOR EACH ROW
-            EXECUTE FUNCTION set_square();
-            """);
-
-        migrationBuilder.Sql("""
-            CREATE OR REPLACE FUNCTION prevent_negative_square()
-            RETURNS trigger
-            LANGUAGE plpgsql
-            AS $$
-            BEGIN
-                IF new.square < 0 THEN RAISE EXCEPTION 'square must be non-negative'; END IF;
-                RETURN NEW;
-            END;
-            $$;
-
-            CREATE TRIGGER prevent_negative_square
-            BEFORE UPDATE ON "Figures"
-            FOR EACH ROW
-            EXECUTE FUNCTION prevent_negative_square();
-            """);
-    }
-
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-        migrationBuilder.Sql("DROP FUNCTION prevent_negative_square() CASCADE;");
-        migrationBuilder.Sql("DROP FUNCTION set_square() CASCADE;");
-
-        migrationBuilder.DropTable("Figures");
-    }
-}
-```
-
-### Dynamic trigger bodies with `CustomSqlGenerator`
-
-Extend `CustomSqlGenerator` to resolve table and column names from the EF model. If a property or entity is renamed, `dotnet ef migrations add` picks up the change and regenerates the trigger SQL automatically.
+Works for trigger bodies too:
 
 ```csharp
 public class TriggersGenerator : CustomSqlGenerator
@@ -371,7 +322,7 @@ public class TriggersGenerator : CustomSqlGenerator
     {
     }
 
-    public string GenerateSyncScript()
+    public string SyncBody()
     {
         var table = GetTableName<Animal>();
         var species = GetColumnName<Animal>(x => x.Species);
@@ -390,97 +341,7 @@ public class TriggersGenerator : CustomSqlGenerator
 ```
 
 ```csharp
-entity.BeforeInsertOrUpdate(
-    name: "sync_animal_type",
-    body: gen.GenerateSyncScript());
-```
-
----
-
-## EFCore.Migrations.Triggers.PostgreSQL
-
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.Triggers.PostgreSQL)](https://www.nuget.org/packages/EFCore.Migrations.Triggers.PostgreSQL) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.Triggers.PostgreSQL)](https://www.nuget.org/packages/EFCore.Migrations.Triggers.PostgreSQL) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-PostgreSQL provider for `EFCore.Migrations.Triggers`.
-
-### Installation
-
-```
-dotnet add package EFCore.Migrations.Triggers.PostgreSQL
-```
-
-### Registration
-
-```csharp
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options
-        .UseNpgsql(..., o => o.UseTriggers()));
-```
-
-### Generated SQL
-
-```sql
-CREATE FUNCTION trigger_name()
-RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    -- your body here
-    RETURN NEW;  -- or RETURN OLD; for DELETE triggers
-END;
-$$;
-
-CREATE TRIGGER trigger_name
-{BEFORE|AFTER|INSTEAD OF} {INSERT|UPDATE|DELETE|INSERT OR UPDATE} ON "TableName"
-FOR EACH ROW 
-EXECUTE FUNCTION trigger_name();
-```
-
-Rollback:
-
-```sql
-DROP FUNCTION trigger_name() CASCADE;
-```
-
----
-
-## EFCore.Migrations.Triggers.SqlServer
-
-[![NuGet](https://img.shields.io/nuget/v/EFCore.Migrations.Triggers.SqlServer)](https://www.nuget.org/packages/EFCore.Migrations.Triggers.SqlServer) [![Downloads](https://img.shields.io/nuget/dt/EFCore.Migrations.Triggers.SqlServer)](https://www.nuget.org/packages/EFCore.Migrations.Triggers.SqlServer) [![License](https://img.shields.io/github/license/AndreqGav/EFCore.Migrations.Toolkit)](LICENSE)
-
-SQL Server provider for `EFCore.Migrations.Triggers`.
-
-### Installation
-
-```
-dotnet add package EFCore.Migrations.Triggers.SqlServer
-```
-
-### Registration
-
-```csharp
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options
-        .UseSqlServer(..., o => o.UseTriggers()));
-```
-
-### Generated SQL
-
-```sql
-CREATE OR ALTER TRIGGER [trigger_name]
-ON [TableName]
-AFTER INSERT
-AS
-BEGIN
-SET NOCOUNT ON;
-    -- your body here
-END;
-```
-
-Rollback:
-
-```sql
-DROP TRIGGER [trigger_name];
+entity.BeforeInsertOrUpdate(name: "sync_animal_type", body: gen.SyncBody());
 ```
 
 ---
@@ -491,4 +352,4 @@ MIT © Андрей Гаврилов 2026
 
 ---
 
-> Migrated from [AndreqGav/EF.Toolkits](https://github.com/AndreqGav/EF.Toolkits).
+> Migrated from [AndreqGav/EFCore.Migrations.Toolkit](https://github.com/AndreqGav/EFCore.Migrations.Toolkit)

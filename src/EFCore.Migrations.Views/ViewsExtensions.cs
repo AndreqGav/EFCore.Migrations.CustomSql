@@ -37,7 +37,7 @@ public static class ViewsExtensions
         return modelBuilder;
     }
 
-    public static EntityTypeBuilder<TEntity> HasSqlQuery<TEntity>(this EntityTypeBuilder<TEntity> builder, string sql)
+    public static EntityTypeBuilder<TEntity> HasQuerySql<TEntity>(this EntityTypeBuilder<TEntity> builder, string sql)
         where TEntity : class
     {
         var viewName = builder.Metadata.GetViewName()

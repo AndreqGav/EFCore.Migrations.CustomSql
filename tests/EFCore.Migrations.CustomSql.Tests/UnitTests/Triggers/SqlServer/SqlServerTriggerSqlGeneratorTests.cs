@@ -283,7 +283,7 @@ public class SqlServerTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void SqlUpModel_Sql_Should_NotNormalizeCrLfToLf()
+    public void GenerateCreateSql_Should_NotNormalizeCrLfToLf()
     {
         // Arrange
         var trigger = MakeTrigger(name: "fn_on_insert", body: "line1;\r\nline2;");
@@ -296,7 +296,7 @@ public class SqlServerTriggerSqlGeneratorTests
     }
 
     [Fact]
-    public void SqlUpModel_Sql_Should_ContainsFullBody()
+    public void GenerateCreateSql_Should_ContainsFullBody_WhenBodyIsRawString()
     {
         // Arrange
         const string body = """

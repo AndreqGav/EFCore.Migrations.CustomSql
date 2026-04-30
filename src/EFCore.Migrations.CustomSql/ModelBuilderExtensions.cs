@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EFCore.Migrations.CustomSql;
 
-public static class AddCustomSqlExtensions
+public static class ModelBuilderExtensions
 {
     public static void HasCustomSql(this IConventionAnnotatableBuilder builder, string name, string sqlUp, string sqlDown)
     {
-        builder.HasAnnotation($"{CustomSqlAnnotationNames.SqlUp}:{name}", sqlUp);
+        builder.HasAnnotation(CustomSqlAnnotationNames.GetUpName(name), sqlUp);
 
         if (sqlDown is not null)
         {
-            builder.HasAnnotation($"{CustomSqlAnnotationNames.SqlDown}:{name}", sqlDown);
+            builder.HasAnnotation(CustomSqlAnnotationNames.GetDownName(name), sqlDown);
         }
     }
 

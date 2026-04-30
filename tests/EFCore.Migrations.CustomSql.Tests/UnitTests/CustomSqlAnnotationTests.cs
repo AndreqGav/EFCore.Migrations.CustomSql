@@ -20,7 +20,6 @@ public class CustomSqlAnnotationTests
 
     internal const string SqlDown = "DROP VIEW IF EXISTS orders_summary;";
 
-    // Изменённая версия того же SQL для проверки сценариев смены скрипта
     internal const string ChangedSqlUp =
         "CREATE VIEW orders_summary AS SELECT id, number, total_amount, 'v2' AS version FROM \"Orders\";";
 
@@ -40,7 +39,7 @@ public class CustomSqlAnnotationTests
 
         // Act
         var annotation = ModelAccessor.GetModel(context).GetAnnotations()
-            .SingleOrDefault(a => a.Name == $"{CustomSqlAnnotationNames.SqlUp}:{SqlName}");
+            .SingleOrDefault(a => a.Name == CustomSqlAnnotationNames.GetUpName(SqlName));
 
         // Assert
         Assert.NotNull(annotation);
@@ -55,7 +54,7 @@ public class CustomSqlAnnotationTests
 
         // Act
         var annotation = ModelAccessor.GetModel(context).GetAnnotations()
-            .SingleOrDefault(a => a.Name == $"{CustomSqlAnnotationNames.SqlDown}:{SqlName}");
+            .SingleOrDefault(a => a.Name == CustomSqlAnnotationNames.GetDownName(SqlName));
 
         // Assert
         Assert.NotNull(annotation);

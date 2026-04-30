@@ -22,27 +22,29 @@ public static class RelationalModelHelper
             return new List<CustomSqlAnnotation>(0);
         }
 
-        var annotations = GetAllAnnotations(model).ToList();
+        var annotations = GetAllAnnotations(model)
+            .Where(x => x.Name.StartsWith(CustomSqlAnnotationNames.SqlPrefix))
+            .ToList();
 
         var sqlUpModels = annotations
-            .Where(x => x.Name.StartsWith(CustomSqlAnnotationNames.SqlUp))
-            .Select(x => new SqlUpModel(x.Name.After(':'), x.Value as string))
+            .Where(x => x.Name.EndsWith(CustomSqlAnnotationNames.SqlUpSuffix))
+            .Select(x => new SqlUpModel(CustomSqlAnnotationNames.GetName(x.Name), x.Value as string))
             .Cast<ISqlModel>()
             .ToList();
 
         var sqlDownModels = annotations
-            .Where(x => x.Name.StartsWith(CustomSqlAnnotationNames.SqlDown))
-            .Select(x => new SqlDownModel(x.Name.After(':'), x.Value as string))
+            .Where(x => x.Name.EndsWith(CustomSqlAnnotationNames.SqlDownSuffix))
+            .Select(x => new SqlDownModel(CustomSqlAnnotationNames.GetName(x.Name), x.Value as string))
             .Cast<ISqlModel>()
             .ToList();
 
-        if (sqlUpModels.Count != sqlDownModels.Count)
-        {
-            var upNames = sqlUpModels.Select(a => a.Name).ToHashSet();
-            var downNames = sqlDownModels.Select(a => a.Name).ToHashSet();
-            var missingDown = upNames.Except(downNames);
-            var missingUp = downNames.Except(upNames);
+        var upNames = sqlUpModels.Select(a => a.Name).ToHashSet();
+        var downNames = sqlDownModels.Select(a => a.Name).ToHashSet();
+        var missingDown = upNames.Except(downNames).ToList();
+        var missingUp = downNames.Except(upNames).ToList();
 
+        if (missingDown.Count != 0 || missingUp.Count != 0)
+        {
             var details = string.Join(", ",
                 missingDown.Select(n => $"'{n}' missing SqlDown").Concat(missingUp.Select(n => $"'{n}' missing SqlUp")));
 
@@ -74,18 +76,5 @@ public static class RelationalModelHelper
         }
 
         return annotations;
-    }
-}
-
-static internal class StringExtensions
-{
-    public static string After(this string source, char delimiter)
-    {
-        if (string.IsNullOrEmpty(source))
-            return string.Empty;
-
-        var index = source.IndexOf(delimiter);
-
-        return index >= 0 ? source[(index + 1)..] : string.Empty;
     }
 }

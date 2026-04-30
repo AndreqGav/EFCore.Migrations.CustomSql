@@ -38,7 +38,6 @@ public class PostgreSqlMigrationDbContext : DbContext
 
     private void ConfigureViews(ModelBuilder modelBuilder)
     {
-        // Представление blog_names строится через генератор, использующий метаданные модели
         var viewSqlGenerator = new BlogViewSqlGenerator(this, modelBuilder);
         modelBuilder.HasCustomSql("blog_names", viewSqlGenerator.Create(), viewSqlGenerator.Drop());
 
@@ -46,7 +45,7 @@ public class PostgreSqlMigrationDbContext : DbContext
         {
             entity.HasNoKey();
             entity.ToView("blog_view")
-                .HasSqlQuery("SELECT * FROM \"Blogs\"");
+                .HasQuerySql("SELECT * FROM \"Blogs\"");
         });
     }
 
@@ -79,7 +78,7 @@ public class PostgreSqlMigrationDbContext : DbContext
         modelBuilder
             .HasDbFunction(typeof(BlogFunctionSql).GetMethod(nameof(BlogFunctionSql.GetName))!)
             .HasName("get_blog_url")
-            .HasSqlBody("RETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);");
+            .HasBodySql("RETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);");
 
         modelBuilder
             .HasCustomSql("get_blog_name", BlogFunctionSql.Up(), BlogFunctionSql.Down())
