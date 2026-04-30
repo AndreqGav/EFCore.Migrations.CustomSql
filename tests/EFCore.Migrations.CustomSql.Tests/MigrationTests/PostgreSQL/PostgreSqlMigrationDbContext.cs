@@ -1,11 +1,9 @@
 using System;
 using EFCore.Migrations.CustomSql.Abstractions;
-using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
+using EFCore.Migrations.CustomSql.PostgreSQL;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
 using EFCore.Migrations.CustomSql.Tests.Models.Inheritance;
-using EFCore.Migrations.Functions;
-using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL;

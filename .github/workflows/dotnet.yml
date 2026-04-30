@@ -59,7 +59,7 @@ jobs:
     - name: Build
       run: dotnet build -c Release
     - name: Test
-      run: dotnet test -f net10.0 -c Release --no-build --no-restore
+      run: dotnet test -f net10.0 -c Release --no-build --no-restore --logger GitHubActions
 
   build-and-push:
     needs: tests
@@ -76,6 +76,6 @@ jobs:
     - name: Build
       run: dotnet build -c Release
     - name: Pack
-      run: dotnet pack -c Release --output nuget-packages
+      run: dotnet pack -c Release -p:PackageVersion=${{ github.event.inputs.version }} --output nuget-packages
     - name: Push nuget packages
       run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

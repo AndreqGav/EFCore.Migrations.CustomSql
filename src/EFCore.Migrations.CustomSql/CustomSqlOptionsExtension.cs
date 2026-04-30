@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EFCore.Migrations.CustomSql;
 
-public class CustomSqlOptionsExtension : IDbContextOptionsExtension
+internal class CustomSqlOptionsExtension : IDbContextOptionsExtension
 {
     public CustomSqlOptionsExtension(DbContextOptionsBuilder optionsBuilder)
     {
