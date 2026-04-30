@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.SqlServer.Views;
 
-public class SqlServerViewSqlGenerator : ISqlObjectGenerator<ViewObject>
+internal class SqlServerViewSqlGenerator : ISqlObjectGenerator<ViewObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 

@@ -1,9 +1,7 @@
 using System;
-using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
+using EFCore.Migrations.CustomSql.PostgreSQL;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
-using EFCore.Migrations.Functions;
-using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

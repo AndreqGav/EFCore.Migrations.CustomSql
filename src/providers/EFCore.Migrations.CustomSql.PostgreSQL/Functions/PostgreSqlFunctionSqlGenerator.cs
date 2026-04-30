@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.PostgreSQL.Functions;
 
-public class PostgreSqlFunctionSqlGenerator : ISqlObjectGenerator<FunctionObject>
+internal class PostgreSqlFunctionSqlGenerator : ISqlObjectGenerator<FunctionObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 

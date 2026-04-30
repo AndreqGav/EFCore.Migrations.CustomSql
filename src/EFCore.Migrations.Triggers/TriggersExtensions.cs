@@ -1,9 +1,11 @@
 using EFCore.Migrations.CustomSql.Constants;
+using EFCore.Migrations.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EFCore.Migrations.Triggers;
+// ReSharper disable once CheckNamespace
+namespace EFCore.Migrations.CustomSql;
 
 public static class TriggersExtensions
 {

@@ -1,10 +1,12 @@
 using System;
 using EFCore.Migrations.CustomSql.Constants;
+using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EFCore.Migrations.Views;
+// ReSharper disable once CheckNamespace
+namespace EFCore.Migrations.CustomSql;
 
 public static class ViewsExtensions
 {

@@ -1,8 +1,9 @@
-using EFCore.Migrations.Triggers;
+using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
+// ReSharper disable once CheckNamespace
+namespace EFCore.Migrations.CustomSql.PostgreSQL;
 
 public static class PostgreSqlTriggersExtensions
 {

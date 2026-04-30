@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
 
-public class PostgreSqlTriggerSqlGenerator : ISqlObjectGenerator<PostgreSqlTriggerObject>
+internal class PostgreSqlTriggerSqlGenerator : ISqlObjectGenerator<PostgreSqlTriggerObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 

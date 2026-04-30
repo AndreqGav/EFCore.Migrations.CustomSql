@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.SqlServer.Triggers;
 
-public class SqlServerTriggerSqlGenerator : ISqlObjectGenerator<SqlServerTriggerObject>
+internal class SqlServerTriggerSqlGenerator : ISqlObjectGenerator<SqlServerTriggerObject>
 {
     private readonly ISqlGenerationHelper _sqlGenerationHelper;
 

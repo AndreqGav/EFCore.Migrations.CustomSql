@@ -8,7 +8,7 @@ public class ContactInfo
     /// <summary>
     /// Телефон.
     /// </summary>
-    public required string Phone { get; set; }
+    public string Phone { get; set; }
 
     /// <summary>
     /// Email.

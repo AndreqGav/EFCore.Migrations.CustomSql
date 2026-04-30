@@ -19,4 +19,8 @@
         <ProjectReference Include="..\..\EFCore.Migrations.Abstractions\EFCore.Migrations.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="EFCore.Migrations.CustomSql.Tests" />
+    </ItemGroup>
+
 </Project>

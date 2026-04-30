@@ -1,4 +1,4 @@
-using EFCore.Migrations.CustomSql.SqlServer.Triggers;
+using EFCore.Migrations.CustomSql.SqlServer;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
 using EFCore.Migrations.CustomSql.Tests.Models.Inheritance;
