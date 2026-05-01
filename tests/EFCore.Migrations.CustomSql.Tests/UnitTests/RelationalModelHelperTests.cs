@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.CustomSql.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
@@ -29,58 +30,58 @@ public class RelationalModelHelperTests
     }
 
     [Fact]
-    public void GetCustomAnnotations_Should_ReturnSingleRegisteredAnnotation()
+    public void GetCustomSqlObjects_Should_ReturnSingleRegisteredCustomSqlObject()
     {
         // Arrange
         using var context = new CustomSqlContext(BuildOptions<CustomSqlContext>());
 
         // Act
-        var annotations = RelationalModelHelper
-            .GetCustomSqlAnnotations(ModelAccessor.GetRelationalModel(context));
+        var customSqlObjects = RelationalModelHelper
+            .GetCustomSqlObjects(ModelAccessor.GetRelationalModel(context));
 
         // Assert
-        Assert.Single(annotations);
-        Assert.Contains(annotations, a => a.Name == SqlName);
+        Assert.Single(customSqlObjects);
+        Assert.Contains(customSqlObjects, a => a.Name == $"{CustomSqlAnnotationNames.Raw}:{SqlName}");
     }
 
     [Fact]
-    public void GetCustomAnnotations_Should_ReturnAnnotation_WithCorrectSql()
+    public void GetCustomSqlObjects_Should_ReturnCustomSqlObject_WithCorrectSql()
     {
         // Arrange
         using var context = new CustomSqlContext(BuildOptions<CustomSqlContext>());
 
         // Act
-        var annotation = RelationalModelHelper
-            .GetCustomSqlAnnotations(ModelAccessor.GetRelationalModel(context))
-            .Single(a => a.Name == SqlName);
+        var customSqlObject = RelationalModelHelper
+            .GetCustomSqlObjects(ModelAccessor.GetRelationalModel(context))
+            .Single(a => a.Name == $"{CustomSqlAnnotationNames.Raw}:{SqlName}");
 
         // Assert
-        Assert.Equal(SqlUp, annotation.SqlUp);
-        Assert.Equal(SqlDown, annotation.SqlDown);
+        Assert.Equal(SqlUp, customSqlObject.SqlUp);
+        Assert.Equal(SqlDown, customSqlObject.SqlDown);
     }
 
     [Fact]
-    public void GetCustomAnnotations_Should_ReturnEmpty_WhenModelIsNull()
+    public void GetCustomSqlObjects_Should_ReturnEmpty_WhenModelIsNull()
     {
         // Arrange & Act
-        var result = RelationalModelHelper.GetCustomSqlAnnotations(null);
+        var result = RelationalModelHelper.GetCustomSqlObjects(null);
 
         // Assert
         Assert.Empty(result);
     }
 
     [Fact]
-    public void GetCustomAnnotations_Should_ReturnEmpty_WhenNoAnnotationsRegistered()
+    public void GetCustomSqlObjects_Should_ReturnEmpty_WhenNoAnnotationsRegistered()
     {
         // Arrange
         using var context = new EmptyCustomSqlContext(BuildOptions<EmptyCustomSqlContext>());
 
         // Act
-        var annotations = RelationalModelHelper
-            .GetCustomSqlAnnotations(ModelAccessor.GetRelationalModel(context));
+        var customSqlObjects = RelationalModelHelper
+            .GetCustomSqlObjects(ModelAccessor.GetRelationalModel(context));
 
         // Assert
-        Assert.Empty(annotations);
+        Assert.Empty(customSqlObjects);
     }
 
     internal sealed class EmptyCustomSqlContext : DbContext
@@ -103,9 +104,9 @@ public class RelationalModelHelperTests
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasCustomSql(
-                CustomSqlAnnotationTests.SqlName,
-                CustomSqlAnnotationTests.SqlUp,
-                CustomSqlAnnotationTests.SqlDown);
+                CustomSqlObjectTests.SqlName,
+                CustomSqlObjectTests.SqlUp,
+                CustomSqlObjectTests.SqlDown);
         }
     }
 }

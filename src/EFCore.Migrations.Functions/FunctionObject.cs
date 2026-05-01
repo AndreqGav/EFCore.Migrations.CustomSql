@@ -1,11 +1,14 @@
 using System;
 using EFCore.Migrations.CustomSql.Abstractions;
+using EFCore.Migrations.CustomSql.Annotations;
 
 namespace EFCore.Migrations.Functions;
 
-public record FunctionObject : INamedSqlObject
+public record FunctionObject : ISqlObject
 {
     public string Name { get; init; }
+
+    public string ObjectType => CustomSqlAnnotationNames.Function;
 
     public string Schema { get; init; } = null;
 
