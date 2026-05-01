@@ -2,7 +2,7 @@ namespace EFCore.Migrations.CustomSql.Abstractions;
 
 public interface ISqlObject
 {
-    string Name { get; }
+    public string Name { get; }
 
-    string ObjectType { get; }
+    public string ObjectType { get; }
 }

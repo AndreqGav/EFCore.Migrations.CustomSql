@@ -1,6 +1,6 @@
 using System.Text;
 using EFCore.Migrations.CustomSql.Abstractions;
-using EFCore.Migrations.Views;
+using EFCore.Migrations.CustomSql.SqlObjects.Views;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.SqlServer.Views;

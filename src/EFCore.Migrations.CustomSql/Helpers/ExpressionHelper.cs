@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace EFCore.Migrations.CustomSql.Helpers;
 
-static internal class ExpressionHelper
+internal static class ExpressionHelper
 {
     /// <summary>
     /// Получить наименование свойства из выражения <see cref="Expression"/>

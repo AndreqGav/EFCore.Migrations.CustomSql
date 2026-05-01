@@ -15,21 +15,18 @@ public static class CustomSqlAnnotationBuilder
     public static string GetTempKey(string objectType, string name)
         => $"{CustomSqlAnnotationNames.Prefix}:{objectType}:{name}";
 
-    public static readonly Regex NameRegex = new("^CustomSql:(?<name>.+):(Up|Down)$");
+    private static readonly Regex NameRegex = new("^CustomSql:(?<name>.+):(Up|Down)$");
 
     public static string ParseName(string annotationKey)
     {
         if (string.IsNullOrEmpty(annotationKey))
+        {
             return null;
+        }
 
         var match = NameRegex.Match(annotationKey);
 
-        if (match.Success)
-        {
-            return match.Groups["name"].Value;
-        }
-
-        return null;
+        return match.Success ? match.Groups["name"].Value : null;
     }
 
     public static void AddSqlObject(this IConventionAnnotatableBuilder builder, ISqlObject obj)

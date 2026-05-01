@@ -1,18 +1,16 @@
 using System.Linq;
+using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.CustomSql.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
-namespace EFCore.Migrations.CustomSql.Abstractions;
+namespace EFCore.Migrations.CustomSql.SqlObjects;
 
 public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where TSqlObject : class, ISqlObject
 {
     private readonly ISqlObjectGenerator<TSqlObject> _generator;
 
-    public SqlObjectConvention(ISqlObjectGenerator<TSqlObject> generator)
-    {
-        _generator = generator;
-    }
+    public SqlObjectConvention(ISqlObjectGenerator<TSqlObject> generator) => _generator = generator;
 
     public void ProcessModelFinalizing(IConventionModelBuilder modelBuilder, IConventionContext<IConventionModelBuilder> context)
     {

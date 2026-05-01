@@ -13,13 +13,13 @@ namespace EFCore.Migrations.CustomSql.Tests.UnitTests;
 /// </summary>
 public class CustomSqlMigrationOperationModifierTests
 {
-    internal const string SqlUp =
+    private const string SqlUp =
         "CREATE VIEW orders_summary AS SELECT id, number, total_amount FROM \"Orders\";";
 
-    internal const string SqlDown = "DROP VIEW IF EXISTS orders_summary;";
+    private const string SqlDown = "DROP VIEW IF EXISTS orders_summary;";
 
     // Изменённая версия того же SQL для проверки сценариев смены скрипта
-    internal const string ChangedSqlUp =
+    private const string ChangedSqlUp =
         "CREATE VIEW orders_summary AS SELECT id, number, total_amount, 'v2' AS version FROM \"Orders\";";
 
     private static DbContextOptions<TContext> BuildOptions<TContext>() where TContext : DbContext

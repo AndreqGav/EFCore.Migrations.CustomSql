@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace EFCore.Migrations.CustomSql.Tests.Helpers;
 
-static internal class SqlServerTestDatabase
+internal static class SqlServerTestDatabase
 {
     private static readonly Lazy<string> ConnectionStringLazy = new(LoadConnectionString);
 
@@ -14,23 +14,19 @@ static internal class SqlServerTestDatabase
 
     public static bool IsAvailable => IsAvailableLazy.Value;
 
-    private static string LoadConnectionString()
-    {
-        return new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.local.json", optional: true)
-            .AddEnvironmentVariables()
-            .Build()
-            .GetConnectionString("SqlServerTestDatabase");
-    }
+    private static string LoadConnectionString() => new ConfigurationBuilder()
+        .SetBasePath(AppContext.BaseDirectory)
+        .AddJsonFile("appsettings.json", optional: true)
+        .AddJsonFile("appsettings.local.json", optional: true)
+        .AddEnvironmentVariables()
+        .Build()
+        .GetConnectionString("SqlServerTestDatabase");
 
     private static bool TryConnect()
     {
         var connectionString = ConnectionString;
 
-        if (string.IsNullOrEmpty(connectionString))
-            return false;
+        if (string.IsNullOrEmpty(connectionString)) return false;
 
         try
         {

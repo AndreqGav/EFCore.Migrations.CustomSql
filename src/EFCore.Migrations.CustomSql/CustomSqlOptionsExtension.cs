@@ -16,10 +16,8 @@ internal class CustomSqlOptionsExtension : IDbContextOptionsExtension
         optionsBuilder.ReplaceService<IMigrationsModelDiffer, CompositeMigrationsModelDiffer>();
     }
 
-    public void ApplyServices(IServiceCollection services)
-    {
+    public void ApplyServices(IServiceCollection services) =>
         services.AddSingleton<IMigrationOperationModifier, CustomSqlMigrationOperationModifier>();
-    }
 
     public void Validate(IDbContextOptions options)
     {
@@ -38,10 +36,7 @@ public class CustomSqlExtensionInfo : DbContextOptionsExtensionInfo
 
     public override int GetServiceProviderHashCode() => 0;
 
-    public override void PopulateDebugInfo(IDictionary<string, string> debugInfo)
-    {
-        debugInfo["CustomSqlExtensionInfo"] = "1";
-    }
+    public override void PopulateDebugInfo(IDictionary<string, string> debugInfo) => debugInfo["CustomSqlExtensionInfo"] = "1";
 
     public override bool IsDatabaseProvider => false;
 
