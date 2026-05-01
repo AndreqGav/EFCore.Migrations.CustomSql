@@ -71,7 +71,7 @@ internal class PostgreSqlTriggerSqlGenerator : ISqlObjectGenerator<PostgreSqlTri
         return builder.ToString();
     }
 
-    public string GenerateDropSql(PostgreSqlTriggerObject trigger)
+    public string GenerateDeleteSql(PostgreSqlTriggerObject trigger)
     {
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
 

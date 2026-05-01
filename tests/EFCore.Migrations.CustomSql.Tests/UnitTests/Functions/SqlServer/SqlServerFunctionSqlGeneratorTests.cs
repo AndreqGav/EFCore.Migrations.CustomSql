@@ -20,7 +20,8 @@ public class SqlServerFunctionSqlGeneratorTests
         string schema = null,
         string body = "RETURN 1;",
         string storeReturnType = "int",
-        FunctionArgument[] args = null)
+        FunctionArgument[] args = null,
+        string sqlUp = null)
         => new FunctionObject
         {
             Name = name,
@@ -28,6 +29,7 @@ public class SqlServerFunctionSqlGeneratorTests
             Body = body,
             StoreReturnType = storeReturnType,
             Args = args ?? Array.Empty<FunctionArgument>(),
+            SqlUp = sqlUp,
         };
 
     [Fact]
@@ -169,7 +171,7 @@ public class SqlServerFunctionSqlGeneratorTests
     {
         var function = MakeFunction(name: "my_func");
 
-        var sql = _generator.GenerateDropSql(function);
+        var sql = _generator.GenerateDeleteSql(function);
 
         Assert.Equal("DROP FUNCTION IF EXISTS \"my_func\";", sql);
     }
@@ -179,7 +181,7 @@ public class SqlServerFunctionSqlGeneratorTests
     {
         var function = MakeFunction(name: "GetActiveUsers");
 
-        var sql = _generator.GenerateDropSql(function);
+        var sql = _generator.GenerateDeleteSql(function);
 
         Assert.Contains("\"GetActiveUsers\"", sql);
     }
@@ -189,9 +191,19 @@ public class SqlServerFunctionSqlGeneratorTests
     {
         var function = MakeFunction(name: "my_func", schema: "dbo");
 
-        var sql = _generator.GenerateDropSql(function);
+        var sql = _generator.GenerateDeleteSql(function);
 
         Assert.Equal("DROP FUNCTION IF EXISTS \"dbo\".\"my_func\";", sql);
+    }
+
+    [Fact]
+    public void GenerateCreateSql_Should_ReturnExactFullSql_WhenSqlUpProvided()
+    {
+        var function = MakeFunction(sqlUp: "CREATE OR ALTER FUNCTION my_func() RETURN 1;");
+
+        var sql = _generator.GenerateCreateSql(function);
+
+        Assert.Equal("CREATE OR ALTER FUNCTION my_func() RETURN 1;".ReplaceLineEndings(), sql.ReplaceLineEndings());
     }
 
     [Fact]

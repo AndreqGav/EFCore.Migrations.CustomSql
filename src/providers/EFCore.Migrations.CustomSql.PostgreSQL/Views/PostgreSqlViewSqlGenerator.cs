@@ -16,6 +16,8 @@ internal class PostgreSqlViewSqlGenerator : ISqlObjectGenerator<ViewObject>
 
     public string GenerateCreateSql(ViewObject view)
     {
+        if (view.SqlUp is not null) return view.SqlUp;
+
         var viewName = _sqlGenerationHelper.DelimitIdentifier(view.Name, view.Schema);
 
         var builder = new StringBuilder();
@@ -26,7 +28,7 @@ internal class PostgreSqlViewSqlGenerator : ISqlObjectGenerator<ViewObject>
         return builder.ToString();
     }
 
-    public string GenerateDropSql(ViewObject view)
+    public string GenerateDeleteSql(ViewObject view)
     {
         var viewName = _sqlGenerationHelper.DelimitIdentifier(view.Name, view.Schema);
 

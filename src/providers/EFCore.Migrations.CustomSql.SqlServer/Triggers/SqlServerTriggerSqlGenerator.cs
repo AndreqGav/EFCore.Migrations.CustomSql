@@ -42,7 +42,7 @@ internal class SqlServerTriggerSqlGenerator : ISqlObjectGenerator<SqlServerTrigg
         return builder.ToString();
     }
 
-    public string GenerateDropSql(SqlServerTriggerObject trigger)
+    public string GenerateDeleteSql(SqlServerTriggerObject trigger)
     {
         var name = _sqlGenerationHelper.DelimitIdentifier(trigger.Name);
 
