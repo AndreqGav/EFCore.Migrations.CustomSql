@@ -5,9 +5,9 @@ namespace EFCore.Migrations.CustomSql.SqlObjects.Triggers;
 
 public abstract record TriggerObject : ISqlObject
 {
-    public string Name { get; init; }
-
     public string ObjectType => CustomSqlAnnotationNames.Trigger;
+
+    public string Name { get; init; }
 
     public string Schema { get; init; }
 
