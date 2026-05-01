@@ -25,29 +25,30 @@ internal class CustomSqlMigrationOperationModifier : IMigrationOperationModifier
         var createOperations = new List<SqlOperation>();
         var deleteOperations = new List<SqlOperation>();
 
-        var sourceAnnotations = RelationalModelHelper.GetCustomSqlAnnotations(source);
-        var targetAnnotations = RelationalModelHelper.GetCustomSqlAnnotations(target);
+        var sourceObjects = RelationalModelHelper.GetCustomSqlObjects(source);
+        var targetObjects = RelationalModelHelper.GetCustomSqlObjects(target);
 
-        var deletedAnnotations = sourceAnnotations.Where(sa =>
-            !targetAnnotations.Select(ta => ta.Name).Contains(sa.Name)
+        var deletedObjects = sourceObjects.Where(sa =>
+            !targetObjects.Select(ta => ta.Name).Contains(sa.Name)
         );
 
-        foreach (var annotation in deletedAnnotations)
+        foreach (var sqlObject in deletedObjects)
         {
-            AddToDelete(annotation.SqlDown);
+            AddToDelete(sqlObject.SqlDown);
         }
 
-        foreach (var targetAnnotation in targetAnnotations)
+        foreach (var targetSqlObject in targetObjects)
         {
-            var sourceAnnotation = sourceAnnotations.SingleOrDefault(sa => sa.Name == targetAnnotation.Name);
-            var targetSql = targetAnnotation.SqlUp;
-            var sourceSql = sourceAnnotation?.SqlUp;
+            var sourceSqlObject = sourceObjects.SingleOrDefault(sa => sa.Name == targetSqlObject.Name);
 
-            if (sourceAnnotation is not null)
+            var targetSql = targetSqlObject.SqlUp;
+            var sourceSql = sourceSqlObject?.SqlUp;
+
+            if (sourceSqlObject is not null)
             {
                 if (!MultilineEquals(targetSql, sourceSql))
                 {
-                    AddToDelete(sourceAnnotation.SqlDown);
+                    AddToDelete(sourceSqlObject.SqlDown);
                     AddToCreate(targetSql);
                 }
             }
@@ -74,8 +75,9 @@ internal class CustomSqlMigrationOperationModifier : IMigrationOperationModifier
             }
         }
     }
-    
-    private static bool MultilineEquals(string sourceString, string targetString, StringComparison comparisonType = StringComparison.Ordinal)
+
+    private static bool MultilineEquals(string sourceString, string targetString,
+        StringComparison comparisonType = StringComparison.Ordinal)
         => ReferenceEquals(sourceString, targetString)
            || sourceString is not null
            && targetString is not null

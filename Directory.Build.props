@@ -8,7 +8,7 @@
         <RepositoryUrl>https://github.com/AndreqGav/EFCore.Migrations.CustomSql</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Copyright>Copyright (c) Андрей Гаврилов 2026</Copyright>
+        <Copyright>Copyright (c) Andrey Gavrilov 2026</Copyright>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 

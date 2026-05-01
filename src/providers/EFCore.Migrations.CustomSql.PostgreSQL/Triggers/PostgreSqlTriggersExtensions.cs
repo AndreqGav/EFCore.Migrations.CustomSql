@@ -134,6 +134,6 @@ public static class PostgreSqlTriggersExtensions
             ConstraintType = constraintType,
         };
 
-        entityTypeBuilder.AddTriggerAnnotation(trigger);
+        entityTypeBuilder.AddTriggerObject(trigger);
     }
 }

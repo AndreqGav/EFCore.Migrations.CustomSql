@@ -4,19 +4,19 @@ using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.CustomSql.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
-using EFCore.Migrations.Triggers;
+using EFCore.Migrations.Functions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace EFCore.Migrations.CustomSql.Tests.UnitTests.Triggers;
+namespace EFCore.Migrations.CustomSql.Tests.UnitTests.Functions;
 
 /// <summary>
-/// Тесты проверяют, что конвенция триггеров правильно преобразует аннотации TriggerObject в SQL-аннотации CustomSql.
+/// Тесты проверяют, что конвенция функций правильно преобразует FunctionObject в SQL-аннотации CustomSql.
 /// </summary>
-public class TriggerConventionTests
+public class FunctionConventionTests
 {
     private static DbContextOptions<TContext> BuildOptions<TContext>() where TContext : DbContext
     {
@@ -34,10 +34,10 @@ public class TriggerConventionTests
         => RelationalModelHelper.GetCustomSqlObjects(ModelAccessor.GetRelationalModel(context)).Single().SqlDown;
 
     [Fact]
-    public void SingleTrigger_Should_ProduceOneCustomSqlObject()
+    public void SingleFunction_Should_ProduceOneCustomSqlObject()
     {
         // Arrange
-        using var context = new SingleTriggerContext(BuildOptions<SingleTriggerContext>());
+        using var context = new SingleFunctionContext(BuildOptions<SingleFunctionContext>());
 
         // Act
         var customSqlObjects = RelationalModelHelper
@@ -48,10 +48,10 @@ public class TriggerConventionTests
     }
 
     [Fact]
-    public void TriggerConvention_Should_StoreSqlUp_FromGenerator()
+    public void FunctionConvention_Should_StoreSqlUp_FromGenerator()
     {
         // Arrange
-        using var context = new SingleTriggerContext(BuildOptions<SingleTriggerContext>());
+        using var context = new SingleFunctionContext(BuildOptions<SingleFunctionContext>());
 
         // Act
         var sqlUp = GetSingleSqlUp(context);
@@ -62,10 +62,10 @@ public class TriggerConventionTests
     }
 
     [Fact]
-    public void TriggerConvention_Should_StoreSqlDown_FromGenerator()
+    public void FunctionConvention_Should_StoreSqlDown_FromGenerator()
     {
         // Arrange
-        using var context = new SingleTriggerContext(BuildOptions<SingleTriggerContext>());
+        using var context = new SingleFunctionContext(BuildOptions<SingleFunctionContext>());
 
         // Act
         var sqlDown = GetSingleSqlDown(context);
@@ -76,10 +76,10 @@ public class TriggerConventionTests
     }
 
     [Fact]
-    public void MultipleTriggers_Should_ProduceMultipleCustomSqlObjects()
+    public void MultipleFunctions_Should_ProduceMultipleCustomSqlObjects()
     {
         // Arrange
-        using var context = new TwoTriggersContext(BuildOptions<TwoTriggersContext>());
+        using var context = new TwoFunctionsContext(BuildOptions<TwoFunctionsContext>());
 
         // Act
         var customSqlObjects = RelationalModelHelper
@@ -90,10 +90,10 @@ public class TriggerConventionTests
     }
 
     [Fact]
-    public void MultipleTriggers_Should_HaveSeparateCustomSqlObjects_WithDifferentNames()
+    public void MultipleFunctions_Should_HaveSeparateCustomSqlObjects_WithDifferentNames()
     {
         // Arrange
-        using var context = new TwoTriggersContext(BuildOptions<TwoTriggersContext>());
+        using var context = new TwoFunctionsContext(BuildOptions<TwoFunctionsContext>());
 
         // Act
         var customSqlObjects = RelationalModelHelper
@@ -105,10 +105,10 @@ public class TriggerConventionTests
     }
 
     [Fact]
-    public void TriggerConvention_Should_CustomSqlObject_WithTriggerTypePrefixInName()
+    public void FunctionConvention_Should_CustomSqlObject_WithFunctionTypePrefixInName()
     {
         // Arrange
-        using var context = new SingleTriggerContext(BuildOptions<SingleTriggerContext>());
+        using var context = new SingleFunctionContext(BuildOptions<SingleFunctionContext>());
 
         // Act
         var customSqlObject = RelationalModelHelper
@@ -116,15 +116,15 @@ public class TriggerConventionTests
             .Single();
 
         // Assert
-        Assert.Contains(CustomSqlAnnotationNames.Trigger, customSqlObject.Name);
+        Assert.Contains(CustomSqlAnnotationNames.Function, customSqlObject.Name);
     }
 
     [Fact]
-    public void TriggerConvention_Should_StoreAnnotationKey_WithoutEntityName()
+    public void FunctionConvention_Should_StoreAnnotationKey_WithoutEntityName()
     {
         // Arrange
-        using var context = new SingleTriggerContext(BuildOptions<SingleTriggerContext>());
-        var expectedKey = CustomSqlAnnotationBuilder.GetUpKey(CustomSqlAnnotationNames.Trigger, SingleTriggerContext.TriggerName);
+        using var context = new SingleFunctionContext(BuildOptions<SingleFunctionContext>());
+        var expectedKey = CustomSqlAnnotationBuilder.GetUpKey(CustomSqlAnnotationNames.Function, SingleFunctionContext.FunctionName);
 
         // Act
         var entityType = ModelAccessor.GetModel(context).GetEntityTypes()
@@ -139,11 +139,11 @@ public class TriggerConventionTests
     }
 
     [Fact]
-    public void TriggerConvention_Should_CustomSqlObject_CorrectName()
+    public void FunctionConvention_Should_CustomSqlObject_CorrectName()
     {
         // Arrange
-        using var context = new SingleTriggerContext(BuildOptions<SingleTriggerContext>());
-        const string expectedName = $"Order:{CustomSqlAnnotationNames.Trigger}:{SingleTriggerContext.TriggerName}";
+        using var context = new SingleFunctionContext(BuildOptions<SingleFunctionContext>());
+        const string expectedName = $"Order:{CustomSqlAnnotationNames.Function}:{SingleFunctionContext.FunctionName}";
 
         // Act
         var customSqlObject = RelationalModelHelper
@@ -155,10 +155,10 @@ public class TriggerConventionTests
     }
 
     [Fact]
-    public void TriggerConvention_SameNameOnDifferentEntities_Should_ProduceSeparateCustomSqlObjects()
+    public void FunctionConvention_SameNameOnDifferentEntities_Should_ProduceSeparateCustomSqlObjects()
     {
         // Arrange
-        using var context = new SameNameTriggerContext(BuildOptions<SameNameTriggerContext>());
+        using var context = new SameNameFunctionContext(BuildOptions<SameNameFunctionContext>());
 
         // Act
         var customSqlObjects = RelationalModelHelper
@@ -170,15 +170,15 @@ public class TriggerConventionTests
     }
 }
 
-internal sealed class SingleTriggerContext : DbContext
+internal sealed class SingleFunctionContext : DbContext
 {
-    public const string TriggerName = "order_set_defaults";
+    public const string FunctionName = "my_function";
 
-    public const string TriggerBody = "PERFORM 1;";
+    public const string FunctionBody = "RETURN 1;";
 
     public DbSet<Order> Orders { get; set; }
 
-    public SingleTriggerContext(DbContextOptions<SingleTriggerContext> options) : base(options)
+    public SingleFunctionContext(DbContextOptions<SingleFunctionContext> options) : base(options)
     {
     }
 
@@ -186,21 +186,20 @@ internal sealed class SingleTriggerContext : DbContext
     {
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.AddTriggerObject(new FakeTriggerObject
+            entity.AddFunctionObject(new FunctionObject
             {
-                Name = TriggerName,
-                Table = "Orders",
-                Body = TriggerBody,
+                Name = FunctionName,
+                Body = FunctionBody,
             });
         });
     }
 }
 
-internal sealed class TwoTriggersContext : DbContext
+internal sealed class TwoFunctionsContext : DbContext
 {
     public DbSet<Order> Orders { get; set; }
 
-    public TwoTriggersContext(DbContextOptions<TwoTriggersContext> options) : base(options)
+    public TwoFunctionsContext(DbContextOptions<TwoFunctionsContext> options) : base(options)
     {
     }
 
@@ -208,30 +207,28 @@ internal sealed class TwoTriggersContext : DbContext
     {
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.AddTriggerObject(new FakeTriggerObject
+            entity.AddFunctionObject(new FunctionObject
             {
-                Name = "order_on_insert",
-                Table = "Orders",
+                Name = "my_function_a",
                 Body = "body_a"
             });
 
-            entity.AddTriggerObject(new FakeTriggerObject
+            entity.AddFunctionObject(new FunctionObject
             {
-                Name = "order_on_update",
-                Table = "Orders",
+                Name = "my_function_b",
                 Body = "body_b"
             });
         });
     }
 }
 
-internal sealed class SameNameTriggerContext : DbContext
+internal sealed class SameNameFunctionContext : DbContext
 {
     public DbSet<Order> Orders { get; set; }
 
     public DbSet<Blog> Blogs { get; set; }
 
-    public SameNameTriggerContext(DbContextOptions<SameNameTriggerContext> options) : base(options)
+    public SameNameFunctionContext(DbContextOptions<SameNameFunctionContext> options) : base(options)
     {
     }
 
@@ -239,20 +236,20 @@ internal sealed class SameNameTriggerContext : DbContext
     {
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.AddTriggerObject(new FakeTriggerObject
+            entity.AddFunctionObject(new FunctionObject
             {
-                Name = "on_change",
-                Table = "Orders",
-                Body = "ORDER_BODY"
+                Name = "my_function",
+                Schema = "schema_a",
+                Body = "ORDER_BODY",
             });
         });
 
         modelBuilder.Entity<Blog>(entity =>
         {
-            entity.AddTriggerObject(new FakeTriggerObject
+            entity.AddFunctionObject(new FunctionObject
             {
-                Name = "on_change",
-                Table = "Blogs",
+                Name = "my_function",
+                Schema = "schema_b",
                 Body = "BLOG_BODY"
             });
         });
@@ -265,32 +262,28 @@ public static class FakeDependencyInjection
     {
         var optionsBuilder = ((ICustomSqlOptionsBuilder)customSqlOptionsBuilder).OptionsBuilder;
 
-        ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(new FakeTriggerProviderExtension());
+        ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(new FakeFunctionProviderExtension());
 
         return customSqlOptionsBuilder;
     }
 }
 
-internal sealed class FakeTriggerProviderExtension : CustomSqlProviderExtension
+internal sealed class FakeFunctionProviderExtension : CustomSqlProviderExtension
 {
     public override void ApplyServices(IServiceCollection services)
     {
         new EntityFrameworkServicesBuilder(services)
-            .TryAdd<IConventionSetPlugin, TriggerSetPlugin<FakeTriggerObject>>();
+            .TryAdd<IConventionSetPlugin, FunctionSetPlugin<FunctionObject>>();
 
         new EntityFrameworkServicesBuilder(services)
             .TryAddProviderSpecificServices(serviceMap =>
-                serviceMap.TryAddSingleton<ISqlObjectGenerator<FakeTriggerObject>, FakeTriggerSqlGenerator>());
+                serviceMap.TryAddSingleton<ISqlObjectGenerator<FunctionObject>, FakeFunctionSqlGenerator>());
     }
 }
 
-internal sealed class FakeTriggerSqlGenerator : ISqlObjectGenerator<FakeTriggerObject>
+internal sealed class FakeFunctionSqlGenerator : ISqlObjectGenerator<FunctionObject>
 {
-    public string GenerateCreateSql(FakeTriggerObject obj) => "FAKE_CREATE";
+    public string GenerateCreateSql(FunctionObject obj) => "FAKE_CREATE";
 
-    public string GenerateDropSql(FakeTriggerObject obj) => "FAKE_DROP";
-}
-
-internal sealed record FakeTriggerObject : TriggerObject
-{
+    public string GenerateDropSql(FunctionObject obj) => "FAKE_DROP";
 }

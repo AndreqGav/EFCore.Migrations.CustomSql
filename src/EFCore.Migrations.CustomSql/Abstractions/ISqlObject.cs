@@ -1,6 +1,8 @@
 namespace EFCore.Migrations.CustomSql.Abstractions;
 
-public interface INamedSqlObject
+public interface ISqlObject
 {
     string Name { get; }
+
+    string ObjectType { get; }
 }

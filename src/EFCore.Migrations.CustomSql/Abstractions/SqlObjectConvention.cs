@@ -1,10 +1,11 @@
 using System.Linq;
+using EFCore.Migrations.CustomSql.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace EFCore.Migrations.CustomSql.Abstractions;
 
-public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where TSqlObject : class, INamedSqlObject
+public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where TSqlObject : class, ISqlObject
 {
     private readonly ISqlObjectGenerator<TSqlObject> _generator;
 
@@ -27,7 +28,7 @@ public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where 
             var sqlDown = _generator.GenerateDropSql(obj);
 
             modelBuilder.Metadata.RemoveAnnotation(annotation.Name);
-            modelBuilder.HasCustomSql(obj.Name, sqlUp, sqlDown);
+            modelBuilder.AddSqlAnnotations(obj.Name, obj.ObjectType, sqlUp, sqlDown);
         }
 
         foreach (var entityType in modelBuilder.Metadata.GetEntityTypes())
@@ -44,7 +45,7 @@ public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where 
                 var sqlDown = _generator.GenerateDropSql(obj);
 
                 entityType.RemoveAnnotation(annotation.Name);
-                entityType.Builder.HasCustomSql(obj.Name, sqlUp, sqlDown);
+                entityType.Builder.AddSqlAnnotations(obj.Name, obj.ObjectType, sqlUp, sqlDown);
             }
         }
     }
