@@ -1,7 +1,7 @@
 using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.CustomSql.Annotations;
 
-namespace EFCore.Migrations.Triggers;
+namespace EFCore.Migrations.CustomSql.SqlObjects.Triggers;
 
 public abstract record TriggerObject : ISqlObject
 {

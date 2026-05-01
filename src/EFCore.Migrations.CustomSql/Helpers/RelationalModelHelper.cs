@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EFCore.Migrations.CustomSql.Helpers;
 
-static internal class RelationalModelHelper
+internal static class RelationalModelHelper
 {
-    // Up и Down хранятся в разных аннотациях — здесь они комбинируются.
+    /// <summary>
+    /// Up and Down are stored in different annotations — here they are combined.
+    /// </summary>
     public static IReadOnlyList<CustomSqlObject> GetCustomSqlObjects(IRelationalModel relationalModel)
     {
         var model = relationalModel?.Model;

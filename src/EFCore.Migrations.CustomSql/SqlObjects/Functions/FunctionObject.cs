@@ -2,7 +2,7 @@ using System;
 using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.CustomSql.Annotations;
 
-namespace EFCore.Migrations.Functions;
+namespace EFCore.Migrations.CustomSql.SqlObjects.Functions;
 
 public record FunctionObject : ISqlObject
 {

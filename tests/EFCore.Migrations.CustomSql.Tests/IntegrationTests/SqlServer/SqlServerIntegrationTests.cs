@@ -1,8 +1,8 @@
 using System;
+using EFCore.Migrations.CustomSql.SqlObjects.Functions;
 using EFCore.Migrations.CustomSql.SqlServer;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
-using EFCore.Migrations.Functions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

@@ -1,4 +1,3 @@
-
 namespace EFCore.Migrations.CustomSql.Tests.Models;
 
 /// <summary>
@@ -17,7 +16,7 @@ public class Order
     public string Number { get; set; }
 
     /// <summary>
-    ///     Итоговая сумма заказа в рублях.     
+    ///     Итоговая сумма заказа в рублях.
     /// </summary>
     public decimal TotalAmount { get; set; }
 

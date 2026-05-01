@@ -14,7 +14,7 @@ public class Warehouse
     /// Название склада.
     /// </summary>
     public string Name { get; set; }
-    
+
     /// <summary>
     /// Адресс.
     /// </summary>
