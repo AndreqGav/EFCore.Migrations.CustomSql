@@ -13,6 +13,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
     [DbContext(typeof(SqlServerMigrationDbContext))]
 <<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260430195742_Initial.Designer.cs
 <<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260430195742_Initial.Designer.cs
+<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260430195742_Initial.Designer.cs
     [Migration("20260430195742_Initial")]
 ========
     [Migration("20260501195634_Initial")]
@@ -20,6 +21,9 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 ========
     [Migration("20260501205054_Initial")]
 >>>>>>>> 879653f (Moved EFCore.Migrations.Functions, EFCore.Migrations.Triggers, EFCore.Migrations.Views to):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260501205054_Initial.Designer.cs
+========
+    [Migration("20260502133426_Initial")]
+>>>>>>>> c1c7fe6 (Updated ModelBuilderExtensions.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260502133426_Initial.Designer.cs
     partial class Initial
     {
         /// <inheritdoc />

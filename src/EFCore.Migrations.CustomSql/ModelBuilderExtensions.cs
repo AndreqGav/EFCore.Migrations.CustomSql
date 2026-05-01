@@ -1,4 +1,4 @@
-using System;
+using System.ComponentModel;
 using System.Linq;
 using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.CustomSql.SqlObjects.Functions;
@@ -13,17 +13,27 @@ namespace EFCore.Migrations.CustomSql;
 
 public static class CustomSqlExtensions
 {
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static void HasCustomSql(this IConventionAnnotatableBuilder builder, string name, string sqlUp, string sqlDown) =>
         builder.AddRawSqlAnnotations(name, sqlUp, sqlDown);
 
-    public static ModelBuilder HasCustomSql(this ModelBuilder modelBuilder, string name, string sqlUp, string sqlDown)
+    public static ModelBuilder HasCustomSql(this ModelBuilder builder, string name, string sqlUp, string sqlDown)
     {
-        modelBuilder.GetInfrastructure().HasCustomSql(name, sqlUp, sqlDown);
+        builder.GetInfrastructure().HasCustomSql(name, sqlUp, sqlDown);
 
-        return modelBuilder;
+        return builder;
     }
 
     public static EntityTypeBuilder<TEntity> HasCustomSql<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, string name,
+        string sqlUp, string sqlDown)
+        where TEntity : class
+    {
+        entityTypeBuilder.GetInfrastructure().HasCustomSql(name, sqlUp, sqlDown);
+
+        return entityTypeBuilder;
+    }
+
+    public static EntityTypeBuilder HasCustomSql<TEntity>(this EntityTypeBuilder entityTypeBuilder, string name,
         string sqlUp, string sqlDown)
         where TEntity : class
     {
@@ -41,32 +51,39 @@ public static class CustomSqlExtensions
     }
 }
 
-public static class FunctionsExtensions
+public static class FunctionExtensions
 {
     internal static void AddFunctionObject(this IConventionAnnotatableBuilder builder, FunctionObject function) =>
         builder.AddSqlObject(function);
 
-    internal static void AddFunctionObject(this ModelBuilder modelBuilder, FunctionObject function) =>
-        modelBuilder.GetInfrastructure().AddFunctionObject(function);
+    internal static void AddFunctionObject(this ModelBuilder builder, FunctionObject function) =>
+        builder.GetInfrastructure().AddFunctionObject(function);
 
     internal static void AddFunctionObject<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, FunctionObject function)
         where TEntity : class => entityTypeBuilder.GetInfrastructure().AddFunctionObject(function);
 
-    public static ModelBuilder HasFunctionSql(this ModelBuilder modelBuilder, string name, string body,
-        Type returnType = null, FunctionArgument[] args = null, string schema = null)
+    public static DbFunctionBuilder HasCreateSql(this DbFunctionBuilder builder, string sql)
     {
+        var conventionBuilder = builder.GetInfrastructure();
+        var modelBuilder = conventionBuilder.ModelBuilder;
+
+        var args = builder.Metadata.Parameters
+            .Select(p => new FunctionArgument(p.Name, p.ClrType, p.StoreType))
+            .ToArray();
+
         var function = new FunctionObject
         {
-            Name = name,
-            Schema = schema,
-            Args = args ?? Array.Empty<FunctionArgument>(),
-            ReturnType = returnType ?? typeof(void),
-            Body = body,
+            Name = builder.Metadata.Name,
+            Schema = builder.Metadata.Schema,
+            StoreReturnType = builder.Metadata.StoreType,
+            ReturnType = builder.Metadata.ReturnType,
+            Args = args,
+            SqlUp = sql,
         };
 
         modelBuilder.AddFunctionObject(function);
 
-        return modelBuilder;
+        return builder;
     }
 
     public static DbFunctionBuilder HasBodySql(this DbFunctionBuilder builder, string body)
@@ -94,53 +111,52 @@ public static class FunctionsExtensions
     }
 }
 
-public static class TriggersExtensions
+public static class TriggerExtensions
 {
     internal static void AddTriggerObject(this IConventionAnnotatableBuilder builder, TriggerObject trigger) =>
         builder.AddSqlObject(trigger);
 
-    internal static void AddTriggerObject(this ModelBuilder modelBuilder, TriggerObject trigger) =>
-        modelBuilder.GetInfrastructure().AddTriggerObject(trigger);
+    internal static void AddTriggerObject(this ModelBuilder builder, TriggerObject trigger) =>
+        builder.GetInfrastructure().AddTriggerObject(trigger);
 
     internal static void AddTriggerObject<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, TriggerObject trigger)
         where TEntity : class => entityTypeBuilder.GetInfrastructure().AddTriggerObject(trigger);
 }
 
-public static class ViewsExtensions
+public static class ViewExtensions
 {
-    internal static void AddViewObject(this IConventionAnnotatableBuilder builder, ViewObject view) => builder.AddSqlObject(view);
+    internal static void AddViewObject(this IConventionAnnotatableBuilder builder, ViewObjectBase view)
+        => builder.AddSqlObject(view);
 
-    internal static void AddViewObject(this ModelBuilder modelBuilder, ViewObject view) =>
-        modelBuilder.GetInfrastructure().AddViewObject(view);
+    internal static void AddViewObject(this EntityTypeBuilder builder, ViewObjectBase view) =>
+        builder.GetInfrastructure().AddViewObject(view);
 
-    internal static void AddViewObject(this EntityTypeBuilder modelBuilder, ViewObject view) =>
-        modelBuilder.GetInfrastructure().AddViewObject(view);
-
-    public static ModelBuilder HasViewSql(this ModelBuilder modelBuilder, string name, string sql, string schema = null)
-    {
-        var view = new ViewObject
-        {
-            Name = name, Schema = schema, Body = sql,
-        };
-
-        modelBuilder.AddViewObject(view);
-
-        return modelBuilder;
-    }
-
-    public static EntityTypeBuilder<TEntity> HasQuerySql<TEntity>(this EntityTypeBuilder<TEntity> builder, string sql)
+    public static ViewBuilder<TEntity> HasCreateSql<TEntity>(this ViewBuilder<TEntity> builder, string sql)
         where TEntity : class
     {
-        var viewName = builder.Metadata.GetViewName()
-                       ?? throw new InvalidOperationException(
-                           $"Entity '{typeof(TEntity).Name}' is not mapped to a view. Call ToView() first.");
-
         var view = new ViewObject
         {
-            Name = viewName, Schema = builder.Metadata.GetViewSchema(), Body = sql,
+            Name = builder.Name,
+            Schema = builder.Schema,
+            SqlUp = sql,
         };
 
-        builder.AddViewObject(view);
+        ((IInfrastructure<EntityTypeBuilder<TEntity>>)builder).Instance.AddViewObject(view);
+
+        return builder;
+    }
+
+    public static ViewBuilder<TEntity> HasQuerySql<TEntity>(this ViewBuilder<TEntity> builder, string query)
+        where TEntity : class
+    {
+        var view = new ViewObject
+        {
+            Name = builder.Name,
+            Schema = builder.Schema,
+            Body = query,
+        };
+
+        ((IInfrastructure<EntityTypeBuilder<TEntity>>)builder).Instance.AddViewObject(view);
 
         return builder;
     }

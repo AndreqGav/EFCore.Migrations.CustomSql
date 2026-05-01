@@ -276,7 +276,7 @@ public class SqlServerTriggerSqlGeneratorTests
         var trigger = MakeTrigger(name: "my_trigger");
 
         // Act
-        var sql = _generator.GenerateDropSql(trigger);
+        var sql = _generator.GenerateDeleteSql(trigger);
 
         // Assert
         Assert.Equal("DROP TRIGGER IF EXISTS \"my_trigger\";", sql);

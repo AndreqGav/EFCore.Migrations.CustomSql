@@ -77,6 +77,15 @@ public class PostgreSqlIntegrationTests : IDisposable
     }
 
     [Fact]
+    public void Migration_Script_Should_Contain_RawFunction()
+    {
+        var script = _context.Database.GenerateCreateScript();
+
+        Assert.Contains("CREATE FUNCTION func_raw()", script);
+        Assert.Contains("RETURN 'text';", script);
+    }
+
+    [Fact]
     public void Migration_Script_Should_Contain_CreateOrReplaceView()
     {
         var script = _context.Database.GenerateCreateScript();
@@ -161,9 +170,10 @@ internal class PostgreSqlTestDbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.BeforeInsert(
-                "trg_order_set_defaults",
-                "NEW.\"IsConfirmed\" := false;");
+            entity
+                .BeforeInsert(
+                    "trg_order_set_defaults",
+                    "NEW.\"IsConfirmed\" := false;");
 
             entity.BeforeInsert(
                 "trg_order_prevent_negative_amount",
@@ -178,12 +188,25 @@ internal class PostgreSqlTestDbContext : DbContext
                 "PERFORM 1;");
         });
 
+        modelBuilder.HasCustomSql("order_view",
+            "CREATE VIEW order_view as SELECT \"Id\", \"TotalAmount\" FROM \"Orders\"",
+            "DROP VIEW order_view"
+        );
+
+        modelBuilder.Entity<OrderCatalogView>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.ToView("OrderCatalogView", o =>
+                o.HasCreateSql("CREATE VIEW \"OrderCatalogView\" AS SELECT * FROM \"Orders\"")
+            );
+        });
+
         modelBuilder.Entity<BlogView>(entity =>
         {
             entity.HasNoKey();
 
-            entity.ToView("blog_view")
-                .HasQuerySql("SELECT * FROM \"Blogs\"");
+            entity.ToView("blog_view", o => o.HasQuerySql("SELECT * FROM \"Blogs\""));
         });
 
         modelBuilder
@@ -206,7 +229,10 @@ internal class PostgreSqlTestDbContext : DbContext
             .HasName("func_bool")
             .HasBodySql("RETURN true;");
 
-        modelBuilder.HasViewSql("order_view", "SELECT \"Id\", \"TotalAmount\" FROM \"Orders\"");
+        modelBuilder
+            .HasDbFunction(typeof(FunctionsSql).GetMethod(nameof(FunctionsSql.Func5))!)
+            .HasName("func_raw")
+            .HasCreateSql("CREATE FUNCTION func_raw()\nRETURNS text\nLANGUAGE plpgsql AS $func$\nBEGIN\nRETURN 'text';\nEND;\n$func$\n;");
     }
 }
 
@@ -219,4 +245,6 @@ public static class FunctionsSql
     public static byte[] Func3(int a, string b, byte c, string[] d) => throw new InvalidOperationException();
 
     public static bool Func4() => throw new InvalidOperationException();
+
+    public static string Func5() => throw new InvalidOperationException();
 }
