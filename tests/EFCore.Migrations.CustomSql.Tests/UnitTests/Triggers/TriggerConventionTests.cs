@@ -278,7 +278,7 @@ internal sealed class FakeTriggerSqlGenerator : ISqlObjectGenerator<FakeTriggerO
 {
     public string GenerateCreateSql(FakeTriggerObject obj) => "FAKE_CREATE";
 
-    public string GenerateDropSql(FakeTriggerObject obj) => "FAKE_DROP";
+    public string GenerateDeleteSql(FakeTriggerObject obj) => "FAKE_DROP";
 }
 
 internal sealed record FakeTriggerObject : TriggerObject

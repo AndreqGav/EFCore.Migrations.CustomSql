@@ -13,6 +13,7 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
     [DbContext(typeof(PostgreSqlMigrationDbContext))]
 <<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195039_Initial.Designer.cs
 <<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195039_Initial.Designer.cs
+<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195039_Initial.Designer.cs
     [Migration("20260430195039_Initial")]
 ========
     [Migration("20260501195623_Initial")]
@@ -20,6 +21,9 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
 ========
     [Migration("20260501205047_Initial")]
 >>>>>>>> 879653f (Moved EFCore.Migrations.Functions, EFCore.Migrations.Triggers, EFCore.Migrations.Views to):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260501205047_Initial.Designer.cs
+========
+    [Migration("20260502133421_Initial")]
+>>>>>>>> c1c7fe6 (Updated ModelBuilderExtensions.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260502133421_Initial.Designer.cs
     partial class Initial
     {
         /// <inheritdoc />
