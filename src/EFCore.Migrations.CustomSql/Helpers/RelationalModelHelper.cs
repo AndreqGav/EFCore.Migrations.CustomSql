@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using EFCore.Migrations.CustomSql.Constants;
+using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.CustomSql.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -10,71 +10,70 @@ namespace EFCore.Migrations.CustomSql.Helpers;
 
 static internal class RelationalModelHelper
 {
-    // т.к. для каждого SQL сущесвутет две операции (Up и Down) и для текстового представление в миграции
-    // они помещены в разные аннотации.
-    // В этом методе они комбинируются снова вместе 
-    public static IReadOnlyList<CustomSqlAnnotation> GetCustomSqlAnnotations(IRelationalModel relationalModel)
+    // Up и Down хранятся в разных аннотациях — здесь они комбинируются.
+    public static IReadOnlyList<CustomSqlObject> GetCustomSqlObjects(IRelationalModel relationalModel)
     {
         var model = relationalModel?.Model;
 
-        if (model is null)
+        if (model is null) return new List<CustomSqlObject>(0);
+
+        var result = new List<CustomSqlObject>();
+
+        result.AddRange(ExtractCustomSqlObjects(model.GetAnnotations(), entityName: null));
+
+        foreach (var entityType in model.GetEntityTypes())
         {
-            return new List<CustomSqlAnnotation>(0);
+            result.AddRange(ExtractCustomSqlObjects(entityType.GetAnnotations(), entityName: entityType.ShortName()));
         }
 
-        var annotations = GetAllAnnotations(model)
-            .Where(x => x.Name.StartsWith(CustomSqlAnnotationNames.SqlPrefix))
+        return result;
+    }
+
+    private static IEnumerable<CustomSqlObject> ExtractCustomSqlObjects(IEnumerable<IAnnotation> annotations, string entityName)
+    {
+        var sqlAnnotations = annotations
+            .Where(x => CustomSqlAnnotationBuilder.ParseName(x.Name) is not null)
             .ToList();
 
-        var sqlUpModels = annotations
-            .Where(x => x.Name.EndsWith(CustomSqlAnnotationNames.SqlUpSuffix))
-            .Select(x => new SqlUpModel(CustomSqlAnnotationNames.GetName(x.Name), x.Value as string))
+        var upModels = sqlAnnotations
+            .Where(x => x.Name.EndsWith(CustomSqlAnnotationNames.UpSuffix))
+            .Select(x => new SqlUpModel(BuildFullName(x.Name, entityName), x.Value as string))
             .Cast<ISqlModel>()
             .ToList();
 
-        var sqlDownModels = annotations
-            .Where(x => x.Name.EndsWith(CustomSqlAnnotationNames.SqlDownSuffix))
-            .Select(x => new SqlDownModel(CustomSqlAnnotationNames.GetName(x.Name), x.Value as string))
+        var downModels = sqlAnnotations
+            .Where(x => x.Name.EndsWith(CustomSqlAnnotationNames.DownSuffix))
+            .Select(x => new SqlDownModel(BuildFullName(x.Name, entityName), x.Value as string))
             .Cast<ISqlModel>()
             .ToList();
 
-        var upNames = sqlUpModels.Select(a => a.Name).ToHashSet();
-        var downNames = sqlDownModels.Select(a => a.Name).ToHashSet();
+        var upNames = upModels.Select(a => a.Name).ToHashSet();
+        var downNames = downModels.Select(a => a.Name).ToHashSet();
         var missingDown = upNames.Except(downNames).ToList();
         var missingUp = downNames.Except(upNames).ToList();
 
         if (missingDown.Count != 0 || missingUp.Count != 0)
         {
             var details = string.Join(", ",
-                missingDown.Select(n => $"'{n}' missing SqlDown").Concat(missingUp.Select(n => $"'{n}' missing SqlUp")));
+                missingDown.Select(n => $"'{n}' missing Down")
+                    .Concat(missingUp.Select(n => $"'{n}' missing Up")));
 
-            throw new InvalidOperationException($"Mismatch between SqlUp and SqlDown annotations: {details}");
+            throw new InvalidOperationException($"Mismatch between Up and Down annotations: {details}");
         }
 
-        var customSqlAnnotations = sqlUpModels.Concat(sqlDownModels)
+        return upModels.Concat(downModels)
             .GroupBy(x => x.Name)
-            .Select(g => new
-            {
-                Name = g.Key,
-                SqlUp = g.OfType<SqlUpModel>().Single(x => x.Name == g.Key).Sql,
-                SqlDown = g.OfType<SqlDownModel>().Single(x => x.Name == g.Key).Sql,
-            })
-            .Select(x => new CustomSqlAnnotation(x.Name, x.SqlUp, x.SqlDown));
-
-        return customSqlAnnotations.ToList();
+            .Select(g => new CustomSqlObject(
+                g.Key,
+                g.OfType<SqlUpModel>().Single().Sql,
+                g.OfType<SqlDownModel>().Single().Sql)
+            );
     }
 
-    private static IEnumerable<IAnnotation> GetAllAnnotations(IModel model)
+    private static string BuildFullName(string annotationKey, string entityName)
     {
-        var annotations = model.GetAnnotations();
+        var name = CustomSqlAnnotationBuilder.ParseName(annotationKey);
 
-        foreach (var entityType in model.GetEntityTypes())
-        {
-            var entityAnnotations = entityType.GetAnnotations();
-
-            annotations = annotations.Concat(entityAnnotations);
-        }
-
-        return annotations;
+        return entityName is null ? name : $"{entityName}:{name}";
     }
 }

@@ -94,8 +94,8 @@ public partial class Initial : Migration
 ### Snapshot
 
 ```csharp
-modelBuilder.HasAnnotation("Sql:Custom:animals_view:Down", "DROP VIEW IF EXISTS ...");
-modelBuilder.HasAnnotation("Sql:Custom:animals_view:Up", "CREATE VIEW ...");
+modelBuilder.HasAnnotation("CustomSql:View:animals_view:Down", "DROP VIEW IF EXISTS ...");
+modelBuilder.HasAnnotation("CustomSql:View:animals_view:Up", "CREATE VIEW ...");
 ```
 
 ---
@@ -348,8 +348,8 @@ entity.BeforeInsertOrUpdate(name: "sync_animal_type", body: gen.SyncBody());
 
 ## License
 
-MIT © Андрей Гаврилов 2026
+MIT © Andrey Gavrilov 2026
 
 ---
 
-> Migrated from [AndreqGav/EFCore.Migrations.Toolkit](https://github.com/AndreqGav/EFCore.Migrations.Toolkit)
+> Migrated from [AndreqGav/EF.Toolkits](https://github.com/AndreqGav/EF.Toolkits)
