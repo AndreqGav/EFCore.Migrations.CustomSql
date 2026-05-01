@@ -284,3 +284,7 @@ resharper_local_function_body = expression_body
 
 # CS9236: Compiling requires binding the lambda expression at least 100 times
 dotnet_diagnostic.CS9236.severity = error
+
+# Do not collapse multi-line initializers into a single line.
+resharper_csharp_keep_existing_initializer_arrangement = true
+

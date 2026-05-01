@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
 namespace EFCore.Migrations.CustomSql.SqlObjects.Functions;
 
-public class FunctionSetPlugin<T> : IConventionSetPlugin where T : FunctionObject
+public class FunctionSetPlugin<T> : IConventionSetPlugin where T : FunctionObjectBase
 {
     private readonly ISqlObjectGenerator<T> _sqlGenerator;
 

@@ -40,8 +40,7 @@ public class PostgreSqlMigrationDbContext : DbContext
         modelBuilder.Entity<BlogView>(entity =>
         {
             entity.HasNoKey();
-            entity.ToView("blog_view")
-                .HasQuerySql("SELECT * FROM \"Blogs\"");
+            entity.ToView("blog_view", o => o.HasQuerySql("SELECT * FROM \"Blogs\""));
         });
     }
 

@@ -17,10 +17,14 @@ public class SqlServerViewSqlGeneratorTests
     private static ViewObject MakeView(
         string name = "my_view",
         string schema = null,
-        string body = "SELECT 1")
+        string body = "SELECT 1",
+        string sqlUp = null)
         => new ViewObject
         {
-            Name = name, Schema = schema, Body = body,
+            Name = name,
+            Schema = schema,
+            Body = body,
+            SqlUp = sqlUp,
         };
 
     [Fact]
@@ -91,7 +95,7 @@ public class SqlServerViewSqlGeneratorTests
     {
         var view = MakeView(name: "my_view");
 
-        var sql = _generator.GenerateDropSql(view);
+        var sql = _generator.GenerateDeleteSql(view);
 
         Assert.Equal("DROP VIEW IF EXISTS \"my_view\";", sql);
     }
@@ -101,7 +105,7 @@ public class SqlServerViewSqlGeneratorTests
     {
         var view = MakeView(name: "ActiveUsers");
 
-        var sql = _generator.GenerateDropSql(view);
+        var sql = _generator.GenerateDeleteSql(view);
 
         Assert.Contains("\"ActiveUsers\"", sql);
     }
@@ -111,9 +115,19 @@ public class SqlServerViewSqlGeneratorTests
     {
         var view = MakeView(name: "ActiveUsers", schema: "dbo");
 
-        var sql = _generator.GenerateDropSql(view);
+        var sql = _generator.GenerateDeleteSql(view);
 
         Assert.Equal("DROP VIEW IF EXISTS \"dbo\".\"ActiveUsers\";", sql);
+    }
+
+    [Fact]
+    public void GenerateCreateSql_Should_ReturnExactFullSql_WhenSqlUpProvided()
+    {
+        var view = MakeView(sqlUp: "CREATE OR ALTER VIEW my_func() RETURN 1;");
+
+        var sql = _generator.GenerateCreateSql(view);
+
+        Assert.Equal("CREATE OR ALTER VIEW my_func() RETURN 1;".ReplaceLineEndings(), sql.ReplaceLineEndings());
     }
 
     [Fact]
