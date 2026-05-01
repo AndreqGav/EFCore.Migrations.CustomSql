@@ -1,4 +1,4 @@
-using EFCore.Migrations.Triggers;
+using EFCore.Migrations.CustomSql.SqlObjects.Triggers;
 
 namespace EFCore.Migrations.CustomSql.SqlServer.Triggers;
 

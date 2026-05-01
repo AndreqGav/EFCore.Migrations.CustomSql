@@ -14,6 +14,8 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="EFCore.Migrations.CustomSql.Tests" />
+        <InternalsVisibleTo Include="EFCore.Migrations.CustomSql.SqlServer" />
+        <InternalsVisibleTo Include="EFCore.Migrations.CustomSql.PostgreSQL" />
     </ItemGroup>
 
 </Project>

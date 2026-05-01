@@ -2,16 +2,13 @@
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
-namespace EFCore.Migrations.Functions;
+namespace EFCore.Migrations.CustomSql.SqlObjects.Functions;
 
 public class FunctionSetPlugin<T> : IConventionSetPlugin where T : FunctionObject
 {
     private readonly ISqlObjectGenerator<T> _sqlGenerator;
 
-    public FunctionSetPlugin(ISqlObjectGenerator<T> sqlGenerator)
-    {
-        _sqlGenerator = sqlGenerator;
-    }
+    public FunctionSetPlugin(ISqlObjectGenerator<T> sqlGenerator) => _sqlGenerator = sqlGenerator;
 
     public ConventionSet ModifyConventions(ConventionSet conventionSet)
     {

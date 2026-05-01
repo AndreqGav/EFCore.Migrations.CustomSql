@@ -1,10 +1,10 @@
 using EFCore.Migrations.CustomSql.Abstractions;
+using EFCore.Migrations.CustomSql.SqlObjects.Functions;
+using EFCore.Migrations.CustomSql.SqlObjects.Triggers;
+using EFCore.Migrations.CustomSql.SqlObjects.Views;
 using EFCore.Migrations.CustomSql.SqlServer.Functions;
 using EFCore.Migrations.CustomSql.SqlServer.Triggers;
 using EFCore.Migrations.CustomSql.SqlServer.Views;
-using EFCore.Migrations.Functions;
-using EFCore.Migrations.Triggers;
-using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,7 @@ public class SqlServerProviderExtension : CustomSqlProviderExtension
 
         new EntityFrameworkServicesBuilder(services)
             .TryAdd<IConventionSetPlugin, ViewSetPlugin<ViewObject>>();
-        
+
         new EntityFrameworkServicesBuilder(services)
             .TryAdd<IConventionSetPlugin, FunctionSetPlugin<FunctionObject>>();
 

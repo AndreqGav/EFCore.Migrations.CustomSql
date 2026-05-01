@@ -48,12 +48,13 @@ public class PostgreSqlTriggerSqlGeneratorTests
                 .ReplaceLineEndings(),
             sql);
     }
-    
+
     [Fact]
     public void GenerateCreateSql_Should_ReturnExactFullSql_WhenBodyWrapped()
     {
         // Arrange
-        var trigger = MakeTrigger(name: "my_trigger", table: "my_table", body: "BEGIN PERFORM 2; RETURN NEW; END;", time: TriggerTimeEnum.After,
+        var trigger = MakeTrigger(name: "my_trigger", table: "my_table", body: "BEGIN PERFORM 2; RETURN NEW; END;",
+            time: TriggerTimeEnum.After,
             operation: TriggerOperationEnum.Update);
 
         // Act

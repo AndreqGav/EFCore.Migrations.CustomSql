@@ -13,13 +13,12 @@ namespace EFCore.Migrations.CustomSql.Tests.UnitTests;
 /// </summary>
 public class RelationalModelHelperTests
 {
-    // SQL для тестового представления сводки заказов
-    internal const string SqlName = "orders_summary";
+    private const string SqlName = "orders_summary";
 
-    internal const string SqlUp =
+    private const string SqlUp =
         "CREATE VIEW orders_summary AS SELECT id, number, total_amount FROM \"Orders\";";
 
-    internal const string SqlDown = "DROP VIEW IF EXISTS orders_summary;";
+    private const string SqlDown = "DROP VIEW IF EXISTS orders_summary;";
 
     private static DbContextOptions<TContext> BuildOptions<TContext>() where TContext : DbContext
     {

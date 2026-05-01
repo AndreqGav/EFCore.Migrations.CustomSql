@@ -1,7 +1,7 @@
 using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.CustomSql.Annotations;
 
-namespace EFCore.Migrations.Views;
+namespace EFCore.Migrations.CustomSql.SqlObjects.Views;
 
 public record ViewObject : ISqlObject
 {

@@ -2,9 +2,9 @@
 using EFCore.Migrations.CustomSql.PostgreSQL.Functions;
 using EFCore.Migrations.CustomSql.PostgreSQL.Triggers;
 using EFCore.Migrations.CustomSql.PostgreSQL.Views;
-using EFCore.Migrations.Functions;
-using EFCore.Migrations.Triggers;
-using EFCore.Migrations.Views;
+using EFCore.Migrations.CustomSql.SqlObjects.Functions;
+using EFCore.Migrations.CustomSql.SqlObjects.Triggers;
+using EFCore.Migrations.CustomSql.SqlObjects.Views;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;

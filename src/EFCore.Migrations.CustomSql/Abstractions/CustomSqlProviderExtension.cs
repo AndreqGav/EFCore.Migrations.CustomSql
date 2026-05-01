@@ -30,10 +30,7 @@ public class CustomSqlProviderExtensionInfo : DbContextOptionsExtensionInfo
 
     public override int GetServiceProviderHashCode() => 0;
 
-    public override void PopulateDebugInfo(IDictionary<string, string> debugInfo)
-    {
-        debugInfo["TriggerExtension"] = "1";
-    }
+    public override void PopulateDebugInfo(IDictionary<string, string> debugInfo) => debugInfo["TriggerExtension"] = "1";
 
     public override bool IsDatabaseProvider => false;
 
