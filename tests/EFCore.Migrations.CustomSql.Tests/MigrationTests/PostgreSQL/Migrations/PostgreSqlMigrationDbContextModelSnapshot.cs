@@ -16,14 +16,14 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("CustomSql:Function:get_blog_url:Down", "DROP FUNCTION IF EXISTS get_blog_url(id integer);")
+                .HasAnnotation("CustomSql:Function:get_blog_url:Up", "CREATE OR REPLACE FUNCTION get_blog_url(id integer)\r\nRETURNS text\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\r\nEND;\r\n$$;")
+                .HasAnnotation("CustomSql:Raw:blog_names:Down", "DROP VIEW IF EXISTS public.blog_names")
+                .HasAnnotation("CustomSql:Raw:blog_names:Up", "CREATE OR REPLACE VIEW public.blog_names\nAS SELECT \"Id\", \"Name\" FROM \"Blogs\"")
+                .HasAnnotation("CustomSql:Raw:get_blog_name:Down", "DROP FUNCTION IF EXISTS GetName")
+                .HasAnnotation("CustomSql:Raw:get_blog_name:Up", "CREATE OR REPLACE FUNCTION GetName(id integer)\nRETURNS text AS $$\nBEGIN\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\n END;\n$$ LANGUAGE plpgsql;")
                 .HasAnnotation("ProductVersion", "10.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("Sql:Custom:blog_names:Down", "DROP VIEW IF EXISTS public.blog_names")
-                .HasAnnotation("Sql:Custom:blog_names:Up", "CREATE OR REPLACE VIEW public.blog_names\nAS SELECT \"Id\", \"Name\" FROM \"Blogs\"")
-                .HasAnnotation("Sql:Custom:get_blog_name:Down", "DROP FUNCTION IF EXISTS GetName")
-                .HasAnnotation("Sql:Custom:get_blog_name:Up", "CREATE OR REPLACE FUNCTION GetName(id integer)\nRETURNS text AS $$\nBEGIN\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\n END;\n$$ LANGUAGE plpgsql;")
-                .HasAnnotation("Sql:Custom:get_blog_url:Down", "DROP FUNCTION IF EXISTS get_blog_url(id integer);")
-                .HasAnnotation("Sql:Custom:get_blog_url:Up", "CREATE OR REPLACE FUNCTION get_blog_url(id integer)\r\nRETURNS text\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\r\nEND;\r\n$$;");
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
@@ -48,8 +48,8 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                     b.ToTable("Blogs");
 
                     b
-                        .HasAnnotation("Sql:Custom:before_insert_or_update_blog:Down", "DROP FUNCTION IF EXISTS before_insert_or_update_blog() CASCADE;")
-                        .HasAnnotation("Sql:Custom:before_insert_or_update_blog:Up", "CREATE OR REPLACE FUNCTION before_insert_or_update_blog()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nIF NEW.\"Url\" IS NOT NULL AND NEW.\"Url\" IS DISTINCT FROM OLD.\"Url\" THEN\n    RAISE EXCEPTION 'Нельзя менять URL';\nEND IF;\nIF NEW.\"Name\" IS NOT NULL THEN\n    UPDATE \"Blogs\" SET \"Url\" = NEW.\"Url\"\n    WHERE \"Name\" = NEW.\"Name\";\nEND IF;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER before_insert_or_update_blog\r\nBEFORE INSERT OR UPDATE ON \"Blogs\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION before_insert_or_update_blog();");
+                        .HasAnnotation("CustomSql:Trigger:before_insert_or_update_blog:Down", "DROP FUNCTION IF EXISTS before_insert_or_update_blog() CASCADE;")
+                        .HasAnnotation("CustomSql:Trigger:before_insert_or_update_blog:Up", "CREATE OR REPLACE FUNCTION before_insert_or_update_blog()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nIF NEW.\"Url\" IS NOT NULL AND NEW.\"Url\" IS DISTINCT FROM OLD.\"Url\" THEN\n    RAISE EXCEPTION 'Нельзя менять URL';\nEND IF;\nIF NEW.\"Name\" IS NOT NULL THEN\n    UPDATE \"Blogs\" SET \"Url\" = NEW.\"Url\"\n    WHERE \"Name\" = NEW.\"Name\";\nEND IF;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER before_insert_or_update_blog\r\nBEFORE INSERT OR UPDATE ON \"Blogs\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION before_insert_or_update_blog();");
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.BlogView", b =>
@@ -68,8 +68,8 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                     b.ToView("blog_view", (string)null);
 
                     b
-                        .HasAnnotation("Sql:Custom:blog_view:Down", "DROP VIEW IF EXISTS blog_view;")
-                        .HasAnnotation("Sql:Custom:blog_view:Up", "CREATE OR REPLACE VIEW blog_view AS\r\nSELECT * FROM \"Blogs\";");
+                        .HasAnnotation("CustomSql:View:blog_view:Down", "DROP VIEW IF EXISTS blog_view;")
+                        .HasAnnotation("CustomSql:View:blog_view:Up", "CREATE OR REPLACE VIEW blog_view AS\r\nSELECT * FROM \"Blogs\";");
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleBase", b =>
@@ -156,10 +156,10 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                     b.ToTable("Orders");
 
                     b
-                        .HasAnnotation("Sql:Custom:prevent_update_negative_amount:Down", "DROP FUNCTION IF EXISTS prevent_update_negative_amount() CASCADE;")
-                        .HasAnnotation("Sql:Custom:prevent_update_negative_amount:Up", "CREATE OR REPLACE FUNCTION prevent_update_negative_amount()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nIF NEW.total_amount < 0 THEN RAISE EXCEPTION 'amount negative'; END IF;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER prevent_update_negative_amount\r\nBEFORE UPDATE ON \"Orders\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION prevent_update_negative_amount();")
-                        .HasAnnotation("Sql:Custom:set_order_defaults:Down", "DROP FUNCTION IF EXISTS set_order_defaults() CASCADE;")
-                        .HasAnnotation("Sql:Custom:set_order_defaults:Up", "CREATE OR REPLACE FUNCTION set_order_defaults()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nNEW.is_confirmed = false;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER set_order_defaults\r\nBEFORE INSERT ON \"Orders\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION set_order_defaults();");
+                        .HasAnnotation("CustomSql:Trigger:prevent_update_negative_amount:Down", "DROP FUNCTION IF EXISTS prevent_update_negative_amount() CASCADE;")
+                        .HasAnnotation("CustomSql:Trigger:prevent_update_negative_amount:Up", "CREATE OR REPLACE FUNCTION prevent_update_negative_amount()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nIF NEW.total_amount < 0 THEN RAISE EXCEPTION 'amount negative'; END IF;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER prevent_update_negative_amount\r\nBEFORE UPDATE ON \"Orders\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION prevent_update_negative_amount();")
+                        .HasAnnotation("CustomSql:Trigger:set_order_defaults:Down", "DROP FUNCTION IF EXISTS set_order_defaults() CASCADE;")
+                        .HasAnnotation("CustomSql:Trigger:set_order_defaults:Up", "CREATE OR REPLACE FUNCTION set_order_defaults()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nNEW.is_confirmed = false;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER set_order_defaults\r\nBEFORE INSERT ON \"Orders\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION set_order_defaults();");
                 });
 
             modelBuilder.Entity("EFCore.Migrations.CustomSql.Tests.Models.Inheritance.ArticleA", b =>
