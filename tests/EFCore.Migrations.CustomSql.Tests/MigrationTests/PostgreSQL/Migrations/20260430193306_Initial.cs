@@ -133,11 +133,11 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.Sql("CREATE OR REPLACE FUNCTION get_blog_url(id integer)\r\nRETURNS text\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\r\nEND;\r\n$$;");
+
             migrationBuilder.Sql("CREATE OR REPLACE VIEW public.blog_names\nAS SELECT \"Id\", \"Name\" FROM \"Blogs\"");
 
             migrationBuilder.Sql("CREATE OR REPLACE FUNCTION GetName(id integer)\nRETURNS text AS $$\nBEGIN\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\n END;\n$$ LANGUAGE plpgsql;");
-
-            migrationBuilder.Sql("CREATE OR REPLACE FUNCTION get_blog_url(id integer)\r\nRETURNS text\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\r\nEND;\r\n$$;");
 
             migrationBuilder.Sql("CREATE OR REPLACE FUNCTION before_insert_or_update_blog()\r\nRETURNS trigger\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nIF NEW.\"Url\" IS NOT NULL AND NEW.\"Url\" IS DISTINCT FROM OLD.\"Url\" THEN\n    RAISE EXCEPTION 'Нельзя менять URL';\nEND IF;\nIF NEW.\"Name\" IS NOT NULL THEN\n    UPDATE \"Blogs\" SET \"Url\" = NEW.\"Url\"\n    WHERE \"Name\" = NEW.\"Name\";\nEND IF;\r\nRETURN NEW;\r\nEND;\r\n$$;\r\n\r\nCREATE TRIGGER before_insert_or_update_blog\r\nBEFORE INSERT OR UPDATE ON \"Blogs\"\r\nFOR EACH ROW\r\nEXECUTE FUNCTION before_insert_or_update_blog();");
 
@@ -151,11 +151,11 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DROP FUNCTION IF EXISTS get_blog_url(id integer);");
+
             migrationBuilder.Sql("DROP VIEW IF EXISTS public.blog_names");
 
             migrationBuilder.Sql("DROP FUNCTION IF EXISTS GetName");
-
-            migrationBuilder.Sql("DROP FUNCTION IF EXISTS get_blog_url(id integer);");
 
             migrationBuilder.Sql("DROP FUNCTION IF EXISTS before_insert_or_update_blog() CASCADE;");
 

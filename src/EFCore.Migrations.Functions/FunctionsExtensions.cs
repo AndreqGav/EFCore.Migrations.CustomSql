@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using EFCore.Migrations.CustomSql.Constants;
+using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.Functions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -11,20 +11,20 @@ namespace EFCore.Migrations.CustomSql;
 
 public static class FunctionsExtensions
 {
-    public static void AddFunctionAnnotation(this IConventionAnnotatableBuilder builder, FunctionObject function)
+    public static void AddFunctionObject(this IConventionAnnotatableBuilder builder, FunctionObject function)
     {
-        builder.HasAnnotation($"{CustomSqlAnnotationNames.Function}:{function.Name}", function);
+        builder.AddSqlObject(function);
     }
 
-    public static void AddFunctionAnnotation(this ModelBuilder modelBuilder, FunctionObject function)
+    public static void AddFunctionObject(this ModelBuilder modelBuilder, FunctionObject function)
     {
-        modelBuilder.GetInfrastructure().AddFunctionAnnotation(function);
+        modelBuilder.GetInfrastructure().AddFunctionObject(function);
     }
 
-    public static void AddFunctionAnnotation<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, FunctionObject function)
+    public static void AddFunctionObject<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, FunctionObject function)
         where TEntity : class
     {
-        entityTypeBuilder.GetInfrastructure().AddFunctionAnnotation(function);
+        entityTypeBuilder.GetInfrastructure().AddFunctionObject(function);
     }
 
     public static ModelBuilder HasFunctionSql(this ModelBuilder modelBuilder, string name, string body,
@@ -39,7 +39,7 @@ public static class FunctionsExtensions
             Body = body,
         };
 
-        modelBuilder.AddFunctionAnnotation(function);
+        modelBuilder.AddFunctionObject(function);
 
         return modelBuilder;
     }
@@ -63,7 +63,7 @@ public static class FunctionsExtensions
             Args = args,
         };
 
-        modelBuilder.AddFunctionAnnotation(function);
+        modelBuilder.AddFunctionObject(function);
 
         return builder;
     }

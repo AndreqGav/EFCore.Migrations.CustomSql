@@ -1,4 +1,4 @@
-using EFCore.Migrations.CustomSql.Constants;
+using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -9,19 +9,19 @@ namespace EFCore.Migrations.CustomSql;
 
 public static class TriggersExtensions
 {
-    public static void AddTriggerAnnotation(this IConventionAnnotatableBuilder builder, TriggerObject trigger)
+    public static void AddTriggerObject(this IConventionAnnotatableBuilder builder, TriggerObject trigger)
     {
-        builder.HasAnnotation($"{CustomSqlAnnotationNames.Trigger}:{trigger.Name}", trigger);
+        builder.AddSqlObject(trigger);
     }
 
-    public static void AddTriggerAnnotation(this ModelBuilder modelBuilder, TriggerObject trigger)
+    public static void AddTriggerObject(this ModelBuilder modelBuilder, TriggerObject trigger)
     {
-        modelBuilder.GetInfrastructure().AddTriggerAnnotation(trigger);
+        modelBuilder.GetInfrastructure().AddTriggerObject(trigger);
     }
 
-    public static void AddTriggerAnnotation<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, TriggerObject trigger)
+    public static void AddTriggerObject<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, TriggerObject trigger)
         where TEntity : class
     {
-        entityTypeBuilder.GetInfrastructure().AddTriggerAnnotation(trigger);
+        entityTypeBuilder.GetInfrastructure().AddTriggerObject(trigger);
     }
 }
