@@ -12,10 +12,14 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
 {
     [DbContext(typeof(PostgreSqlMigrationDbContext))]
 <<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195738_Initial.Designer.cs
+<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195738_Initial.Designer.cs
     [Migration("20260430195738_Initial")]
 ========
     [Migration("20260501195623_Initial")]
 >>>>>>>> 9de0344 (Updated annotation key in snapshot.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260501195623_Initial.Designer.cs
+========
+    [Migration("20260501205047_Initial")]
+>>>>>>>> 879653f (Moved EFCore.Migrations.Functions, EFCore.Migrations.Triggers, EFCore.Migrations.Views to):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260501205047_Initial.Designer.cs
     partial class Initial
     {
         /// <inheritdoc />

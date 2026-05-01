@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EFCore.Migrations.CustomSql.Abstractions;
-using EFCore.Migrations.Functions;
+using EFCore.Migrations.CustomSql.SqlObjects.Functions;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EFCore.Migrations.CustomSql.PostgreSQL.Functions;
