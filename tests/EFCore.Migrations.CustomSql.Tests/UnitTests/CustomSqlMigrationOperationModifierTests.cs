@@ -160,9 +160,9 @@ public class CustomSqlMigrationOperationModifierTests
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasCustomSql(
-                CustomSqlAnnotationTests.SqlName,
-                CustomSqlAnnotationTests.SqlUp,
-                CustomSqlAnnotationTests.SqlDown);
+                CustomSqlObjectTests.SqlName,
+                CustomSqlObjectTests.SqlUp,
+                CustomSqlObjectTests.SqlDown);
         }
     }
 
@@ -177,9 +177,9 @@ public class CustomSqlMigrationOperationModifierTests
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasCustomSql(
-                CustomSqlAnnotationTests.SqlName,
-                CustomSqlAnnotationTests.ChangedSqlUp,
-                CustomSqlAnnotationTests.SqlDown);
+                CustomSqlObjectTests.SqlName,
+                CustomSqlObjectTests.ChangedSqlUp,
+                CustomSqlObjectTests.SqlDown);
         }
     }
 }

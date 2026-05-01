@@ -1,4 +1,4 @@
-﻿using EFCore.Migrations.CustomSql.Constants;
+using EFCore.Migrations.CustomSql.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,12 +9,7 @@ public static class ModelBuilderExtensions
 {
     public static void HasCustomSql(this IConventionAnnotatableBuilder builder, string name, string sqlUp, string sqlDown)
     {
-        builder.HasAnnotation(CustomSqlAnnotationNames.GetUpName(name), sqlUp);
-
-        if (sqlDown is not null)
-        {
-            builder.HasAnnotation(CustomSqlAnnotationNames.GetDownName(name), sqlDown);
-        }
+        builder.AddRawSqlAnnotations(name, sqlUp, sqlDown);
     }
 
     public static ModelBuilder HasCustomSql(this ModelBuilder modelBuilder, string name, string sqlUp, string sqlDown)

@@ -1,5 +1,5 @@
 using System;
-using EFCore.Migrations.CustomSql.Constants;
+using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -10,19 +10,19 @@ namespace EFCore.Migrations.CustomSql;
 
 public static class ViewsExtensions
 {
-    public static void AddViewAnnotation(this IConventionAnnotatableBuilder builder, ViewObject view)
+    public static void AddViewObject(this IConventionAnnotatableBuilder builder, ViewObject view)
     {
-        builder.HasAnnotation($"{CustomSqlAnnotationNames.View}:{view.Name}", view);
+        builder.AddSqlObject(view);
     }
 
-    public static void AddViewAnnotation(this ModelBuilder modelBuilder, ViewObject view)
+    public static void AddViewObject(this ModelBuilder modelBuilder, ViewObject view)
     {
-        modelBuilder.GetInfrastructure().AddViewAnnotation(view);
+        modelBuilder.GetInfrastructure().AddViewObject(view);
     }
 
-    public static void AddViewAnnotation(this EntityTypeBuilder modelBuilder, ViewObject view)
+    public static void AddViewObject(this EntityTypeBuilder modelBuilder, ViewObject view)
     {
-        modelBuilder.GetInfrastructure().AddViewAnnotation(view);
+        modelBuilder.GetInfrastructure().AddViewObject(view);
     }
 
     public static ModelBuilder HasViewSql(this ModelBuilder modelBuilder, string name, string sql, string schema = null)
@@ -34,7 +34,7 @@ public static class ViewsExtensions
             Body = sql,
         };
 
-        modelBuilder.AddViewAnnotation(view);
+        modelBuilder.AddViewObject(view);
 
         return modelBuilder;
     }
@@ -53,7 +53,7 @@ public static class ViewsExtensions
             Body = sql,
         };
 
-        builder.AddViewAnnotation(view);
+        builder.AddViewObject(view);
 
         return builder;
     }

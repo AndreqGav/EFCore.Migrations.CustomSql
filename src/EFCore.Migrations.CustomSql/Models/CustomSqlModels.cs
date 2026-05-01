@@ -7,44 +7,8 @@ internal interface ISqlModel
     string Sql { get; }
 }
 
-internal class SqlUpModel : ISqlModel
-{
-    public SqlUpModel(string name, string sql)
-    {
-        Name = name;
-        Sql = sql;
-    }
+internal record SqlUpModel(string Name, string Sql) : ISqlModel;
 
-    public string Name { get; }
+internal record SqlDownModel(string Name, string Sql) : ISqlModel;
 
-    public string Sql { get; }
-}
-
-internal class SqlDownModel : ISqlModel
-{
-    public SqlDownModel(string name, string sql)
-    {
-        Name = name;
-        Sql = sql;
-    }
-
-    public string Name { get; }
-
-    public string Sql { get; }
-}
-
-internal class CustomSqlAnnotation
-{
-    public string Name { get; }
-
-    public string SqlUp { get; }
-
-    public string SqlDown { get; }
-
-    public CustomSqlAnnotation(string name, string sqlUp, string sqlDown)
-    {
-        Name = name;
-        SqlUp = sqlUp;
-        SqlDown = sqlDown;
-    }
-}
+internal record CustomSqlObject(string Name, string SqlUp, string SqlDown);
