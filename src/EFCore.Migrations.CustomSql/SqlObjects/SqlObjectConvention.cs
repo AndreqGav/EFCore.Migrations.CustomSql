@@ -23,7 +23,7 @@ public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where 
             if (annotation.Value is not TSqlObject obj) continue;
 
             var sqlUp = _generator.GenerateCreateSql(obj);
-            var sqlDown = _generator.GenerateDropSql(obj);
+            var sqlDown = _generator.GenerateDeleteSql(obj);
 
             modelBuilder.Metadata.RemoveAnnotation(annotation.Name);
             modelBuilder.AddSqlAnnotations(obj.Name, obj.ObjectType, sqlUp, sqlDown);
@@ -40,7 +40,7 @@ public class SqlObjectConvention<TSqlObject> : IModelFinalizingConvention where 
                 if (annotation.Value is not TSqlObject obj) continue;
 
                 var sqlUp = _generator.GenerateCreateSql(obj);
-                var sqlDown = _generator.GenerateDropSql(obj);
+                var sqlDown = _generator.GenerateDeleteSql(obj);
 
                 entityType.RemoveAnnotation(annotation.Name);
                 entityType.Builder.AddSqlAnnotations(obj.Name, obj.ObjectType, sqlUp, sqlDown);

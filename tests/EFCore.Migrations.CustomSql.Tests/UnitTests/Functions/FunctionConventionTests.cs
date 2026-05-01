@@ -278,5 +278,5 @@ internal sealed class FakeFunctionSqlGenerator : ISqlObjectGenerator<FunctionObj
 {
     public string GenerateCreateSql(FunctionObject obj) => "FAKE_CREATE";
 
-    public string GenerateDropSql(FunctionObject obj) => "FAKE_DROP";
+    public string GenerateDeleteSql(FunctionObject obj) => "FAKE_DROP";
 }

@@ -22,6 +22,8 @@ internal class SqlServerFunctionSqlGenerator : ISqlObjectGenerator<FunctionObjec
 
     public string GenerateCreateSql(FunctionObject function)
     {
+        if (function.SqlUp is not null) return function.SqlUp;
+
         var funcName = _sqlGenerationHelper.DelimitIdentifier(function.Name, function.Schema);
         var args = GenerateArgsSql(function.Args);
         var returnType = function.StoreReturnType ?? _typeMappingSource.GetMapping(function.ReturnType).StoreType;
@@ -48,7 +50,7 @@ internal class SqlServerFunctionSqlGenerator : ISqlObjectGenerator<FunctionObjec
         return builder.ToString();
     }
 
-    public string GenerateDropSql(FunctionObject function)
+    public string GenerateDeleteSql(FunctionObject function)
     {
         var funcName = _sqlGenerationHelper.DelimitIdentifier(function.Name, function.Schema);
 
@@ -63,7 +65,7 @@ internal class SqlServerFunctionSqlGenerator : ISqlObjectGenerator<FunctionObjec
         {
             var pgType = a.StoreType ?? _typeMappingSource.GetMapping(a.Type).StoreType;
 
-            return $"{a.Name} {pgType}";
+            return $"@{a.Name} {pgType}";
         });
 
         return string.Join(", ", argStrings);

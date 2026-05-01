@@ -28,8 +28,8 @@ public class PostgreSqlProviderExtension : CustomSqlProviderExtension
             .TryAddProviderSpecificServices(serviceMap =>
             {
                 serviceMap.TryAddSingleton<ISqlObjectGenerator<PostgreSqlTriggerObject>, PostgreSqlTriggerSqlGenerator>();
-                serviceMap.TryAddSingleton<ISqlObjectGenerator<ViewObject>, PostgreSqlViewSqlGenerator>();
                 serviceMap.TryAddSingleton<ISqlObjectGenerator<FunctionObject>, PostgreSqlFunctionSqlGenerator>();
+                serviceMap.TryAddSingleton<ISqlObjectGenerator<ViewObject>, PostgreSqlViewSqlGenerator>();
             });
     }
 }

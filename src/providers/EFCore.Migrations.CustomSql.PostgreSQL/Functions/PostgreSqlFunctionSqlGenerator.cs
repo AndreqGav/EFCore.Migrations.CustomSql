@@ -23,6 +23,8 @@ internal class PostgreSqlFunctionSqlGenerator : ISqlObjectGenerator<FunctionObje
 
     public string GenerateCreateSql(FunctionObject function)
     {
+        if (function.SqlUp is not null) return function.SqlUp;
+
         var funcName = _sqlGenerationHelper.DelimitIdentifier(function.Name, function.Schema);
         var returnType = function.StoreReturnType ?? _typeMappingSource.GetMapping(function.ReturnType).StoreType;
 
@@ -53,7 +55,7 @@ internal class PostgreSqlFunctionSqlGenerator : ISqlObjectGenerator<FunctionObje
         return builder.ToString();
     }
 
-    public string GenerateDropSql(FunctionObject function)
+    public string GenerateDeleteSql(FunctionObject function)
     {
         var funcName = _sqlGenerationHelper.DelimitIdentifier(function.Name, function.Schema);
         var args = GenerateArgsSql(function.Args);

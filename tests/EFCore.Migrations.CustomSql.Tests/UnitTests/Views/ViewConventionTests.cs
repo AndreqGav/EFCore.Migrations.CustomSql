@@ -285,5 +285,5 @@ internal sealed class FakeViewSqlGenerator : ISqlObjectGenerator<ViewObject>
 {
     public string GenerateCreateSql(ViewObject obj) => "FAKE_CREATE";
 
-    public string GenerateDropSql(ViewObject obj) => "FAKE_DROP";
+    public string GenerateDeleteSql(ViewObject obj) => "FAKE_DROP";
 }

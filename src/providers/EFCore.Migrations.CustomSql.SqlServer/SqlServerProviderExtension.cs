@@ -28,8 +28,8 @@ public class SqlServerProviderExtension : CustomSqlProviderExtension
             .TryAddProviderSpecificServices(serviceMap =>
             {
                 serviceMap.TryAddSingleton<ISqlObjectGenerator<SqlServerTriggerObject>, SqlServerTriggerSqlGenerator>();
-                serviceMap.TryAddSingleton<ISqlObjectGenerator<ViewObject>, SqlServerViewSqlGenerator>();
                 serviceMap.TryAddSingleton<ISqlObjectGenerator<FunctionObject>, SqlServerFunctionSqlGenerator>();
+                serviceMap.TryAddSingleton<ISqlObjectGenerator<ViewObject>, SqlServerViewSqlGenerator>();
             });
     }
 }

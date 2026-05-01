@@ -1,5 +1,4 @@
 using System;
-using EFCore.Migrations.CustomSql.SqlObjects.Functions;
 using EFCore.Migrations.CustomSql.SqlServer;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
@@ -65,15 +64,7 @@ public class SqlServerIntegrationTests : IDisposable
     {
         var script = _context.Database.GenerateCreateScript();
 
-        Assert.Contains("CREATE OR ALTER VIEW [order_view]", script);
-    }
-
-    [Fact]
-    public void Migration_Script_Should_Contain_ScalarFunction_ViaHasFunctionSql()
-    {
-        var script = _context.Database.GenerateCreateScript();
-
-        Assert.Contains("CREATE OR ALTER FUNCTION [get_zero]", script);
+        Assert.Contains("CREATE OR ALTER VIEW [blog_view]", script);
     }
 
     [Fact]
@@ -166,23 +157,20 @@ internal class SqlServerTestDbContext : DbContext
             "CREATE OR ALTER PROCEDURE [get_blog_name] @id INT AS SELECT [Name] FROM [Blogs] WHERE [Id] = @id",
             "DROP PROCEDURE IF EXISTS [get_blog_name]");
 
-        modelBuilder.HasViewSql("order_view", "SELECT [Id], [TotalAmount] FROM [Orders]");
-
-        modelBuilder.HasFunctionSql("get_zero", "RETURN 0;", typeof(int));
-
         modelBuilder
             .HasDbFunction(typeof(SqlServerFunctionsSql).GetMethod(nameof(SqlServerFunctionsSql.GetOne))!)
             .HasName("get_one")
             .HasBodySql("RETURN 1;");
 
-        modelBuilder.HasFunctionSql(
-            "get_blog_url",
-            "RETURN (SELECT [Url] FROM [Blogs] WHERE [Id] = @id);",
-            typeof(string),
-            new[]
-            {
-                new FunctionArgument("@id", typeof(int))
-            });
+        modelBuilder
+            .HasDbFunction(typeof(SqlServerFunctionsSql).GetMethod(nameof(SqlServerFunctionsSql.GetBlogUrl))!)
+            .HasName("get_blog_url")
+            .HasBodySql("RETURN 'text';");
+
+        modelBuilder
+            .HasDbFunction(typeof(SqlServerFunctionsSql).GetMethod(nameof(SqlServerFunctionsSql.Func1))!)
+            .HasName("func_1")
+            .HasCreateSql("CREATE FUNCTION func_1() RETURNS integer AS BEGIN RETURN 1; END;");
 
         modelBuilder.Entity<Order>(entity =>
         {
@@ -207,7 +195,18 @@ internal class SqlServerTestDbContext : DbContext
         modelBuilder.Entity<BlogView>(entity =>
         {
             entity.HasNoKey();
-            entity.ToView("blog_view");
+            entity.ToView("blog_view", o =>
+                o.HasQuerySql("SELECT * FROM [Blogs]")
+            );
+        });
+
+
+        modelBuilder.Entity<OrderCatalogView>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView("order_catalog_view", o =>
+                o.HasCreateSql("CREATE VIEW [order_catalog_view] AS SELECT * FROM [Orders]")
+            );
         });
     }
 }
@@ -215,4 +214,8 @@ internal class SqlServerTestDbContext : DbContext
 internal static class SqlServerFunctionsSql
 {
     public static int GetOne() => throw new InvalidOperationException();
+
+    public static string GetBlogUrl(int id, string data) => throw new InvalidOperationException();
+
+    public static int Func1() => throw new InvalidOperationException();
 }

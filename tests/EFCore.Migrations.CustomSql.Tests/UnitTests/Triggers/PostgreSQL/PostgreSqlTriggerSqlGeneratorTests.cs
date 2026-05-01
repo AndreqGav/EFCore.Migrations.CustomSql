@@ -318,7 +318,7 @@ public class PostgreSqlTriggerSqlGeneratorTests
         var trigger = MakeTrigger(name: "my_trigger");
 
         // Act
-        var sql = _generator.GenerateDropSql(trigger);
+        var sql = _generator.GenerateDeleteSql(trigger);
 
         // Assert
         Assert.Equal("DROP FUNCTION IF EXISTS \"my_trigger\"() CASCADE;", sql);
@@ -331,7 +331,7 @@ public class PostgreSqlTriggerSqlGeneratorTests
         var trigger = MakeTrigger(name: "fn_on_insert");
 
         // Act
-        var sql = _generator.GenerateDropSql(trigger);
+        var sql = _generator.GenerateDeleteSql(trigger);
 
         // Assert
         Assert.Contains("\"fn_on_insert\"", sql);
