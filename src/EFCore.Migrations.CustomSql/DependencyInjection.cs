@@ -7,11 +7,8 @@ namespace EFCore.Migrations.CustomSql;
 
 public static class DependencyInjection
 {
-    public static TBuilder UseCustomSql<TBuilder>([NotNull] this TBuilder optionsBuilder)
-        where TBuilder : DbContextOptionsBuilder
-    {
-        return optionsBuilder.UseCustomSql(_ => { });
-    }
+    public static TBuilder UseCustomSql<TBuilder>([NotNull] this TBuilder optionsBuilder) where TBuilder : DbContextOptionsBuilder
+        => optionsBuilder.UseCustomSql(_ => { });
 
     public static TBuilder UseCustomSql<TBuilder>([NotNull] this TBuilder optionsBuilder, Action<CustomSqlOptionsBuilder> configure)
         where TBuilder : DbContextOptionsBuilder
@@ -29,15 +26,12 @@ public static class DependencyInjection
 
 public interface ICustomSqlOptionsBuilder
 {
-    DbContextOptionsBuilder OptionsBuilder { get; }
+    public DbContextOptionsBuilder OptionsBuilder { get; }
 }
 
 public class CustomSqlOptionsBuilder : ICustomSqlOptionsBuilder
 {
-    public CustomSqlOptionsBuilder(DbContextOptionsBuilder optionsBuilder)
-    {
-        OptionsBuilder = optionsBuilder;
-    }
+    public CustomSqlOptionsBuilder(DbContextOptionsBuilder optionsBuilder) => OptionsBuilder = optionsBuilder;
 
     protected virtual DbContextOptionsBuilder OptionsBuilder { get; }
 

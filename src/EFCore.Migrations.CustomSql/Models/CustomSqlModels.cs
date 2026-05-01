@@ -2,9 +2,9 @@
 
 internal interface ISqlModel
 {
-    string Name { get; }
+    public string Name { get; }
 
-    string Sql { get; }
+    public string Sql { get; }
 }
 
 internal record SqlUpModel(string Name, string Sql) : ISqlModel;

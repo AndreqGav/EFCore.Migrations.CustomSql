@@ -25,7 +25,7 @@ internal class PaymentA : PaymentBase
     /// Доп. сведения A.
     /// </summary>
     public string Extra1 { get; set; }
-    
+
     /// <summary>
     /// Общие сведения.
     /// </summary>
@@ -41,7 +41,7 @@ internal class PaymentB : PaymentBase
     /// Доп. сведения B.
     /// </summary>
     public string Extra2 { get; set; }
-    
+
     /// <summary>
     /// Общие сведения.
     /// </summary>

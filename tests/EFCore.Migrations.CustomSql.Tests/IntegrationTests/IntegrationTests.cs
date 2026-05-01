@@ -4,9 +4,6 @@ using Xunit;
 
 namespace EFCore.Migrations.CustomSql.Tests.IntegrationTests;
 
-/// <summary>
-/// Интеграционные тесты.
-/// </summary>
 public class IntegrationTests
 {
     private static DbContextOptions<IntegrationDbContext> BuildNpgsqlOptions()

@@ -13,10 +13,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\EFCore.Migrations.Triggers\EFCore.Migrations.Triggers.csproj" />
-        <ProjectReference Include="..\..\EFCore.Migrations.Views\EFCore.Migrations.Views.csproj" />
-        <ProjectReference Include="..\..\EFCore.Migrations.Functions\EFCore.Migrations.Functions.csproj" />
         <ProjectReference Include="..\..\EFCore.Migrations.Abstractions\EFCore.Migrations.Abstractions.csproj" />
+        <ProjectReference Include="..\..\EFCore.Migrations.CustomSql\EFCore.Migrations.CustomSql.csproj" />
     </ItemGroup>
 
     <ItemGroup>
