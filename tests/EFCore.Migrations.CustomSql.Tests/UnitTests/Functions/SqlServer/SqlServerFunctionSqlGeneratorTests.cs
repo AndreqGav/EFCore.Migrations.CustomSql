@@ -1,7 +1,7 @@
 using System;
+using EFCore.Migrations.CustomSql.SqlObjects.Functions;
 using EFCore.Migrations.CustomSql.SqlServer.Functions;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
-using EFCore.Migrations.Functions;
 using Xunit;
 
 namespace EFCore.Migrations.CustomSql.Tests.UnitTests.Functions.SqlServer;
@@ -114,8 +114,7 @@ public class SqlServerFunctionSqlGeneratorTests
     {
         var function = MakeFunction(args: new[]
         {
-            new FunctionArgument("@userId", typeof(int), "int"),
-            new FunctionArgument("@name", typeof(string), "nvarchar(100)"),
+            new FunctionArgument("@userId", typeof(int), "int"), new FunctionArgument("@name", typeof(string), "nvarchar(100)"),
         });
 
         var sql = _generator.GenerateCreateSql(function);

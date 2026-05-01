@@ -1,6 +1,6 @@
+using EFCore.Migrations.CustomSql.SqlObjects.Views;
 using EFCore.Migrations.CustomSql.SqlServer.Views;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
-using EFCore.Migrations.Views;
 using Xunit;
 
 namespace EFCore.Migrations.CustomSql.Tests.UnitTests.Views.SqlServer;
@@ -20,9 +20,7 @@ public class SqlServerViewSqlGeneratorTests
         string body = "SELECT 1")
         => new ViewObject
         {
-            Name = name,
-            Schema = schema,
-            Body = body,
+            Name = name, Schema = schema, Body = body,
         };
 
     [Fact]

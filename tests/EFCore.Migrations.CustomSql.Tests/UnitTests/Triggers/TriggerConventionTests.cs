@@ -2,9 +2,9 @@ using System.Linq;
 using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.CustomSql.Helpers;
+using EFCore.Migrations.CustomSql.SqlObjects.Triggers;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
-using EFCore.Migrations.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
@@ -188,9 +188,7 @@ internal sealed class SingleTriggerContext : DbContext
         {
             entity.AddTriggerObject(new FakeTriggerObject
             {
-                Name = TriggerName,
-                Table = "Orders",
-                Body = TriggerBody,
+                Name = TriggerName, Table = "Orders", Body = TriggerBody,
             });
         });
     }
@@ -210,16 +208,12 @@ internal sealed class TwoTriggersContext : DbContext
         {
             entity.AddTriggerObject(new FakeTriggerObject
             {
-                Name = "order_on_insert",
-                Table = "Orders",
-                Body = "body_a"
+                Name = "order_on_insert", Table = "Orders", Body = "body_a"
             });
 
             entity.AddTriggerObject(new FakeTriggerObject
             {
-                Name = "order_on_update",
-                Table = "Orders",
-                Body = "body_b"
+                Name = "order_on_update", Table = "Orders", Body = "body_b"
             });
         });
     }
@@ -241,9 +235,7 @@ internal sealed class SameNameTriggerContext : DbContext
         {
             entity.AddTriggerObject(new FakeTriggerObject
             {
-                Name = "on_change",
-                Table = "Orders",
-                Body = "ORDER_BODY"
+                Name = "on_change", Table = "Orders", Body = "ORDER_BODY"
             });
         });
 
@@ -251,9 +243,7 @@ internal sealed class SameNameTriggerContext : DbContext
         {
             entity.AddTriggerObject(new FakeTriggerObject
             {
-                Name = "on_change",
-                Table = "Blogs",
-                Body = "BLOG_BODY"
+                Name = "on_change", Table = "Blogs", Body = "BLOG_BODY"
             });
         });
     }

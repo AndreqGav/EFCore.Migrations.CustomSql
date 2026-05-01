@@ -2,9 +2,9 @@ using System.Linq;
 using EFCore.Migrations.CustomSql.Abstractions;
 using EFCore.Migrations.CustomSql.Annotations;
 using EFCore.Migrations.CustomSql.Helpers;
+using EFCore.Migrations.CustomSql.SqlObjects.Functions;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
 using EFCore.Migrations.CustomSql.Tests.Models;
-using EFCore.Migrations.Functions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
@@ -188,8 +188,7 @@ internal sealed class SingleFunctionContext : DbContext
         {
             entity.AddFunctionObject(new FunctionObject
             {
-                Name = FunctionName,
-                Body = FunctionBody,
+                Name = FunctionName, Body = FunctionBody,
             });
         });
     }
@@ -209,14 +208,12 @@ internal sealed class TwoFunctionsContext : DbContext
         {
             entity.AddFunctionObject(new FunctionObject
             {
-                Name = "my_function_a",
-                Body = "body_a"
+                Name = "my_function_a", Body = "body_a"
             });
 
             entity.AddFunctionObject(new FunctionObject
             {
-                Name = "my_function_b",
-                Body = "body_b"
+                Name = "my_function_b", Body = "body_b"
             });
         });
     }
@@ -238,9 +235,7 @@ internal sealed class SameNameFunctionContext : DbContext
         {
             entity.AddFunctionObject(new FunctionObject
             {
-                Name = "my_function",
-                Schema = "schema_a",
-                Body = "ORDER_BODY",
+                Name = "my_function", Schema = "schema_a", Body = "ORDER_BODY",
             });
         });
 
@@ -248,9 +243,7 @@ internal sealed class SameNameFunctionContext : DbContext
         {
             entity.AddFunctionObject(new FunctionObject
             {
-                Name = "my_function",
-                Schema = "schema_b",
-                Body = "BLOG_BODY"
+                Name = "my_function", Schema = "schema_b", Body = "BLOG_BODY"
             });
         });
     }

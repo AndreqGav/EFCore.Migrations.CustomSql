@@ -1,7 +1,7 @@
 using System;
 using EFCore.Migrations.CustomSql.PostgreSQL.Functions;
+using EFCore.Migrations.CustomSql.SqlObjects.Functions;
 using EFCore.Migrations.CustomSql.Tests.Helpers;
-using EFCore.Migrations.Functions;
 using Xunit;
 
 namespace EFCore.Migrations.CustomSql.Tests.UnitTests.Functions.PostgreSQL;

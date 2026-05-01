@@ -4,7 +4,7 @@ using Npgsql;
 
 namespace EFCore.Migrations.CustomSql.Tests.Helpers;
 
-static internal class PostgreSqlDatabase
+internal static class PostgreSqlDatabase
 {
     private static readonly Lazy<string> ConnectionStringLazy = new(LoadConnectionString);
 
@@ -14,16 +14,13 @@ static internal class PostgreSqlDatabase
 
     public static bool IsAvailable => IsAvailableLazy.Value;
 
-    private static string LoadConnectionString()
-    {
-        return new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.local.json", optional: true)
-            .AddEnvironmentVariables()
-            .Build()
-            .GetConnectionString("PostgreSqlTestDatabase");
-    }
+    private static string LoadConnectionString() => new ConfigurationBuilder()
+        .SetBasePath(AppContext.BaseDirectory)
+        .AddJsonFile("appsettings.json", optional: true)
+        .AddJsonFile("appsettings.local.json", optional: true)
+        .AddEnvironmentVariables()
+        .Build()
+        .GetConnectionString("PostgreSqlTestDatabase");
 
     private static bool TryConnect()
     {
