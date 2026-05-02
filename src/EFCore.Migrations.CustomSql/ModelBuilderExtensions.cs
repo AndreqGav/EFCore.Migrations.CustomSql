@@ -13,10 +13,16 @@ namespace EFCore.Migrations.CustomSql;
 
 public static class CustomSqlExtensions
 {
+    /// <summary>
+    /// Adds raw custom SQL annotations to a convention-based model builder.
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static void HasCustomSql(this IConventionAnnotatableBuilder builder, string name, string sqlUp, string sqlDown) =>
         builder.AddRawSqlAnnotations(name, sqlUp, sqlDown);
 
+    /// <summary>
+    /// Registers raw custom SQL scripts that are executed in Up and Down migrations.
+    /// </summary>
     public static ModelBuilder HasCustomSql(this ModelBuilder builder, string name, string sqlUp, string sqlDown)
     {
         builder.GetInfrastructure().HasCustomSql(name, sqlUp, sqlDown);
@@ -24,6 +30,9 @@ public static class CustomSqlExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Registers raw custom SQL scripts for the specified entity type.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> HasCustomSql<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, string name,
         string sqlUp, string sqlDown)
         where TEntity : class
@@ -33,6 +42,9 @@ public static class CustomSqlExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers raw custom SQL scripts for the specified entity builder.
+    /// </summary>
     public static EntityTypeBuilder HasCustomSql<TEntity>(this EntityTypeBuilder entityTypeBuilder, string name,
         string sqlUp, string sqlDown)
         where TEntity : class
@@ -42,6 +54,9 @@ public static class CustomSqlExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Adds raw custom SQL annotations to a convention-based entity type builder.
+    /// </summary>
     public static IConventionEntityTypeBuilder HasCustomSql(this IConventionEntityTypeBuilder entityTypeBuilder, string name,
         string sqlUp, string sqlDown)
     {
@@ -62,6 +77,9 @@ public static class FunctionExtensions
     internal static void AddFunctionObject<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder, FunctionObject function)
         where TEntity : class => entityTypeBuilder.GetInfrastructure().AddFunctionObject(function);
 
+    /// <summary>
+    /// Registers a function by using the full SQL creation script.
+    /// </summary>
     public static DbFunctionBuilder HasCreateSql(this DbFunctionBuilder builder, string sql)
     {
         var conventionBuilder = builder.GetInfrastructure();
@@ -86,6 +104,9 @@ public static class FunctionExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Registers a function by using only its body SQL.
+    /// </summary>
     public static DbFunctionBuilder HasBodySql(this DbFunctionBuilder builder, string body)
     {
         var conventionBuilder = builder.GetInfrastructure();
@@ -131,6 +152,9 @@ public static class ViewExtensions
     internal static void AddViewObject(this EntityTypeBuilder builder, ViewObjectBase view) =>
         builder.GetInfrastructure().AddViewObject(view);
 
+    /// <summary>
+    /// Registers a view by using the full SQL creation script.
+    /// </summary>
     public static ViewBuilder<TEntity> HasCreateSql<TEntity>(this ViewBuilder<TEntity> builder, string sql)
         where TEntity : class
     {
@@ -146,6 +170,9 @@ public static class ViewExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Registers a view by using only its query SQL body.
+    /// </summary>
     public static ViewBuilder<TEntity> HasQuerySql<TEntity>(this ViewBuilder<TEntity> builder, string query)
         where TEntity : class
     {

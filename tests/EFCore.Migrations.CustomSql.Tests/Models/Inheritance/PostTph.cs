@@ -1,34 +1,34 @@
 namespace EFCore.Migrations.CustomSql.Tests.Models.Inheritance;
 
 /// <summary>
-/// Базовый тип в наследовании TPH.
+/// Base type in TPH inheritance.
 /// </summary>
 public class PostBase
 {
     /// <summary>
-    /// Идентификатор.
+    /// Identifier.
     /// </summary>
     public int Id { get; set; }
 }
 
 /// <summary>
-/// Наследник А.
+/// Derived type A.
 /// </summary>
 public class PostA : PostBase
 {
     /// <summary>
-    /// Текст А.
+    /// Text A.
     /// </summary>
     public string TextA { get; set; }
 }
 
 /// <summary>
-/// Наследник Б.
+/// Derived type B.
 /// </summary>
 public class PostB : PostBase
 {
     /// <summary>
-    /// Текст Б.
+    /// Text B.
     /// </summary>
     public string TextB { get; set; }
 }

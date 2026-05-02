@@ -14,7 +14,7 @@ using Xunit;
 namespace EFCore.Migrations.CustomSql.Tests.UnitTests.Functions;
 
 /// <summary>
-/// Тесты проверяют, что конвенция функций правильно преобразует FunctionObject в SQL-аннотации CustomSql.
+/// Tests verify that the function convention correctly converts FunctionObject into CustomSql SQL annotations.
 /// </summary>
 public class FunctionConventionTests
 {

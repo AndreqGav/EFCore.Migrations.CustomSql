@@ -9,7 +9,7 @@ using Xunit;
 namespace EFCore.Migrations.CustomSql.Tests.UnitTests;
 
 /// <summary>
-/// Тесты проверяют генерацию операций миграции через <see cref="CustomSqlMigrationOperationModifier"/>.
+/// Tests verify migration operation generation via <see cref="CustomSqlMigrationOperationModifier"/>.
 /// </summary>
 public class CustomSqlMigrationOperationModifierTests
 {
@@ -18,7 +18,7 @@ public class CustomSqlMigrationOperationModifierTests
 
     private const string SqlDown = "DROP VIEW IF EXISTS orders_summary;";
 
-    // Изменённая версия того же SQL для проверки сценариев смены скрипта
+    // Modified version of the same SQL for script-change scenarios
     private const string ChangedSqlUp =
         "CREATE VIEW orders_summary AS SELECT id, number, total_amount, 'v2' AS version FROM \"Orders\";";
 

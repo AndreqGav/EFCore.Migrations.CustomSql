@@ -25,7 +25,7 @@ public class SqlServerMigrationTests
         Assert.Null(exception);
         Assert.Empty(context.Database.GetPendingMigrations());
         Assert.NotEmpty(context.Database.GetAppliedMigrations());
-        Assert.True(context.Database.CanConnect(), "Не удалось подключиться к базе после миграций.");
+        Assert.True(context.Database.CanConnect(), "Failed to connect to the database after migrations.");
         Assert.Equal(0, context.Orders.Count());
     }
 
@@ -49,7 +49,7 @@ public class SqlServerMigrationTests
         {
             var diffs = differences.Select(d =>
             {
-                // Если это SqlOperation, достаем сам SQL-код
+                // If this is a SqlOperation, include the SQL text itself.
                 if (d is Microsoft.EntityFrameworkCore.Migrations.Operations.SqlOperation sqlOp)
                 {
                     return $"SqlOperation: \n{sqlOp.Sql}\n(SuppressTransaction: {sqlOp.SuppressTransaction})";
@@ -63,7 +63,7 @@ public class SqlServerMigrationTests
 
         // Assert
         Assert.False(hasDifferences,
-            $"Обнаружены изменения ({differences.Count} шт.) в моделях DbContext, для которых не создана миграция.\nДетали:\n{diffMessage}\nВыполните 'dotnet ef migrations add'.");
+            $"Detected changes ({differences.Count}) in DbContext models without a corresponding migration.\nDetails:\n{diffMessage}\nRun 'dotnet ef migrations add'.");
     }
 
     private IRelationalModel GetSourceRelationalModel(SqlServerMigrationDbContext context)

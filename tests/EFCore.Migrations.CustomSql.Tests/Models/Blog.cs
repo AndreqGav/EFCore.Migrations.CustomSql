@@ -1,38 +1,38 @@
 namespace EFCore.Migrations.CustomSql.Tests.Models;
 
 /// <summary>
-/// Блог.
+/// Blog.
 /// </summary>
 public class Blog
 {
     /// <summary>
-    /// Идентификатор блога.
+    /// Blog identifier.
     /// </summary>
     public int Id { get; set; }
 
     /// <summary>
-    /// Название блога.
+    /// Blog name.
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    /// URL блога.
+    /// Blog URL.
     /// </summary>
     public string Url { get; set; }
 }
 
 /// <summary>
-/// Представление блога.
+/// Blog view.
 /// </summary>
 public class BlogView
 {
     /// <summary>
-    /// Идентификатор.
+    /// Identifier.
     /// </summary>
     public int Id { get; set; }
 
     /// <summary>
-    /// Наименование.
+    /// Name.
     /// </summary>
     public string Name { get; set; }
 

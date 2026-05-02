@@ -7,6 +7,9 @@ namespace EFCore.Migrations.CustomSql.PostgreSQL;
 
 public static class PostgreSqlTriggersExtensions
 {
+    /// <summary>
+    /// Registers a BEFORE INSERT trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> BeforeInsert<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body)
         where TEntity : class
@@ -16,6 +19,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers an AFTER INSERT trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> AfterInsert<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body, ConstraintTriggerType? constraintType = null)
         where TEntity : class
@@ -25,6 +31,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers an INSTEAD OF INSERT trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> InsteadInsert<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body)
         where TEntity : class
@@ -34,6 +43,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers a BEFORE UPDATE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> BeforeUpdate<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body)
         where TEntity : class
@@ -43,6 +55,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers an AFTER UPDATE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> AfterUpdate<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body, ConstraintTriggerType? constraintType = null)
         where TEntity : class
@@ -52,6 +67,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers an INSTEAD OF UPDATE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> InsteadUpdate<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body)
         where TEntity : class
@@ -61,6 +79,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers a BEFORE DELETE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> BeforeDelete<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body)
         where TEntity : class
@@ -70,6 +91,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers an AFTER DELETE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> AfterDelete<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body, ConstraintTriggerType? constraintType = null)
         where TEntity : class
@@ -79,6 +103,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers an INSTEAD OF DELETE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> InsteadDelete<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body)
         where TEntity : class
@@ -88,6 +115,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers a BEFORE INSERT OR UPDATE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> BeforeInsertOrUpdate<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body)
         where TEntity : class
@@ -97,6 +127,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers an AFTER INSERT OR UPDATE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> AfterInsertOrUpdate<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body, ConstraintTriggerType? constraintType = null)
         where TEntity : class
@@ -106,6 +139,9 @@ public static class PostgreSqlTriggersExtensions
         return entityTypeBuilder;
     }
 
+    /// <summary>
+    /// Registers an INSTEAD OF INSERT OR UPDATE trigger.
+    /// </summary>
     public static EntityTypeBuilder<TEntity> InsteadInsertOrUpdate<TEntity>(this EntityTypeBuilder<TEntity> entityTypeBuilder,
         string name, string body)
         where TEntity : class

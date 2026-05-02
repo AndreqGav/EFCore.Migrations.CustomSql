@@ -1,34 +1,34 @@
 namespace EFCore.Migrations.CustomSql.Tests.Models.Inheritance;
 
 /// <summary>
-/// Абстрактный базовый тип в наследовании TPC.
+/// Abstract base type in TPC inheritance.
 /// </summary>
 public abstract class BlogBase
 {
     /// <summary>
-    /// Идентификатор.
+    /// Identifier.
     /// </summary>
     public int Id { get; set; }
 }
 
 /// <summary>
-/// Наследник А в TPC.
+/// Derived type A in TPC.
 /// </summary>
 public class BlogA : BlogBase
 {
     /// <summary>
-    /// Имя А.
+    /// Name A.
     /// </summary>
     public string Name { get; set; }
 }
 
 /// <summary>
-/// Наследник Б в TPC.
+/// Derived type B in TPC.
 /// </summary>
 public class BlogB : BlogBase
 {
     /// <summary>
-    /// Имя Б.
+    /// Name B.
     /// </summary>
     public string Name { get; set; }
 }

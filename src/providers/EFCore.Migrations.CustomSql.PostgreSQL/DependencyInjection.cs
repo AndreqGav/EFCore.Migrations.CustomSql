@@ -6,6 +6,9 @@ namespace EFCore.Migrations.CustomSql;
 
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Enables PostgreSQL-specific CustomSql services.
+    /// </summary>
     public static CustomSqlOptionsBuilder UseNpgsql(this CustomSqlOptionsBuilder customSqlOptionsBuilder)
     {
         var optionsBuilder = ((ICustomSqlOptionsBuilder)customSqlOptionsBuilder).OptionsBuilder;

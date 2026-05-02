@@ -13,6 +13,9 @@ namespace EFCore.Migrations.CustomSql.PostgreSQL;
 
 public class PostgreSqlProviderExtension : CustomSqlProviderExtension
 {
+    /// <summary>
+    /// Registers PostgreSQL conventions and SQL generators for CustomSql objects.
+    /// </summary>
     public override void ApplyServices(IServiceCollection services)
     {
         new EntityFrameworkServicesBuilder(services)

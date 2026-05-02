@@ -14,7 +14,7 @@ using Xunit;
 namespace EFCore.Migrations.CustomSql.Tests.UnitTests.Views;
 
 /// <summary>
-/// Тесты проверяют, что конвенция представлений правильно преобразует ViewObject в SQL-аннотации CustomSql.
+/// Tests verify that the view convention correctly converts ViewObject into CustomSql SQL annotations.
 /// </summary>
 public class ViewConventionTests
 {

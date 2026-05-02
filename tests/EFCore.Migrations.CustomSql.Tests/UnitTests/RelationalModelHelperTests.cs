@@ -9,7 +9,7 @@ using Xunit;
 namespace EFCore.Migrations.CustomSql.Tests.UnitTests;
 
 /// <summary>
-/// Тесты для <see cref="RelationalModelHelper"/>.
+/// Tests for <see cref="RelationalModelHelper"/>.
 /// </summary>
 public class RelationalModelHelperTests
 {

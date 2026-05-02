@@ -14,7 +14,7 @@ using Xunit;
 namespace EFCore.Migrations.CustomSql.Tests.UnitTests.Triggers;
 
 /// <summary>
-/// Тесты проверяют, что конвенция триггеров правильно преобразует аннотации TriggerObject в SQL-аннотации CustomSql.
+/// Tests verify that the trigger convention correctly converts TriggerObject annotations into CustomSql SQL annotations.
 /// </summary>
 public class TriggerConventionTests
 {

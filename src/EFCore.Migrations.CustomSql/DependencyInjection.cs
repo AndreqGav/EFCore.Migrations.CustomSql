@@ -7,9 +7,15 @@ namespace EFCore.Migrations.CustomSql;
 
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Enables CustomSql services with default configuration.
+    /// </summary>
     public static TBuilder UseCustomSql<TBuilder>([NotNull] this TBuilder optionsBuilder) where TBuilder : DbContextOptionsBuilder
         => optionsBuilder.UseCustomSql(_ => { });
 
+    /// <summary>
+    /// Enables CustomSql services and applies additional configuration.
+    /// </summary>
     public static TBuilder UseCustomSql<TBuilder>([NotNull] this TBuilder optionsBuilder, Action<CustomSqlOptionsBuilder> configure)
         where TBuilder : DbContextOptionsBuilder
     {

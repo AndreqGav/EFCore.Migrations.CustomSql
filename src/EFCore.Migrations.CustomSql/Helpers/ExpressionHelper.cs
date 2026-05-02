@@ -8,9 +8,6 @@ namespace EFCore.Migrations.CustomSql.Helpers;
 
 internal static class ExpressionHelper
 {
-    /// <summary>
-    /// Получить наименование свойства из выражения <see cref="Expression"/>
-    /// </summary>
     public static string GetMemberName(Expression expression)
     {
         var memberExpression = GetMemberExpression(expression);
@@ -18,9 +15,6 @@ internal static class ExpressionHelper
         return memberExpression?.Member.Name;
     }
 
-    /// <summary>
-    /// Получить <see cref="MemberExpression"/> из выражения <see cref="Expression"/>
-    /// </summary>
     public static MemberExpression GetMemberExpression(Expression expression)
     {
         switch (expression)
@@ -43,7 +37,6 @@ internal static class ExpressionHelper
     }
 
     /// <summary>
-    /// Получить список <see cref="MemberInfo"/> для вложенного обращение к полю <paramref name="expression"/>
     /// https://stackoverflow.com/questions/29084894/how-to-use-an-expressionfunc-to-set-a-nested-property
     /// </summary>
     public static List<MemberInfo> GetDeepMembers<TObject, T>(Expression<Func<TObject, T>> expression)
@@ -52,7 +45,7 @@ internal static class ExpressionHelper
 
         Expression exp = expression;
 
-        // Выражение вида: _ => _
+        // Expression like: _ => _
         if (exp is LambdaExpression { Body: ParameterExpression })
         {
             return members;
@@ -88,9 +81,6 @@ internal static class ExpressionHelper
         return members;
     }
 
-    /// <summary>
-    /// Получить значение из цепочки <paramref name="members"/> объекта <paramref name="obj"/>
-    /// </summary>
     public static object GetDeepValue(object obj, ICollection<MemberInfo> members)
     {
         var targetObject = obj;
@@ -115,9 +105,6 @@ internal static class ExpressionHelper
         return targetObject;
     }
 
-    /// <summary>
-    /// Присвоить значение <paramref name="value"/> цепочке <paramref name="members"/> объекта <paramref name="obj"/>
-    /// </summary>
     public static void SetDeepValue(object obj, ICollection<MemberInfo> members, object value)
     {
         var targetObject = obj;

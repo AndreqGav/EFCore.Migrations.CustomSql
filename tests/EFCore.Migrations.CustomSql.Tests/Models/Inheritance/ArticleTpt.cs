@@ -1,34 +1,34 @@
 namespace EFCore.Migrations.CustomSql.Tests.Models.Inheritance;
 
 /// <summary>
-/// Базовый тип в наследовании TPT.
+/// Base type in TPT inheritance.
 /// </summary>
 public class ArticleBase
 {
     /// <summary>
-    /// Идентификатор.
+    /// Identifier.
     /// </summary>
     public int Id { get; set; }
 }
 
 /// <summary>
-/// Наследник А в TPT.
+/// Derived type A in TPT.
 /// </summary>
 public class ArticleA : ArticleBase
 {
     /// <summary>
-    /// Специфичное содержимое А.
+    /// Specific content A.
     /// </summary>
     public string ContentA { get; set; }
 }
 
 /// <summary>
-/// Наследник Б в TPT.
+/// Derived type B in TPT.
 /// </summary>
 public class ArticleB : ArticleBase
 {
     /// <summary>
-    /// Специфичное содержимое Б.
+    /// Specific content B.
     /// </summary>
     public string ContentB { get; set; }
 }

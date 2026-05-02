@@ -7,9 +7,6 @@ using Xunit;
 
 namespace EFCore.Migrations.CustomSql.Tests.IntegrationTests.PostgreSQL;
 
-/// <summary>
-/// Интеграционные тесты PostgreSQL.
-/// </summary>
 [Collection("PostgreSQL Database tests")]
 public class PostgreSqlIntegrationTests : IDisposable
 {
