@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Linq;
 using EFCore.Migrations.CustomSql.Annotations;
@@ -157,6 +158,38 @@ public static class ViewExtensions
         };
 
         ((IInfrastructure<EntityTypeBuilder<TEntity>>)builder).Instance.AddViewObject(view);
+
+        return builder;
+    }
+
+    [Obsolete("This method will be removed. Use ViewBuilder<TEntity>.HasCreateSql() instead.")]
+    public static EntityTypeBuilder<TEntity> HasCreateSql<TEntity>(this EntityTypeBuilder<TEntity> builder, string sql)
+        where TEntity : class
+    {
+        var view = new ViewObject
+        {
+            Name = builder.Metadata.GetViewName(),
+            Schema = builder.Metadata.GetViewSchema(),
+            SqlUp = sql,
+        };
+
+        builder.AddViewObject(view);
+
+        return builder;
+    }
+
+    [Obsolete("This method will be removed. Use ViewBuilder<TEntity>.HasQuerySql() instead.")]
+    public static EntityTypeBuilder<TEntity> HasQuerySql<TEntity>(this EntityTypeBuilder<TEntity> builder, string query)
+        where TEntity : class
+    {
+        var view = new ViewObject
+        {
+            Name = builder.Metadata.GetViewName(),
+            Schema = builder.Metadata.GetViewSchema(),
+            Body = query,
+        };
+
+        builder.AddViewObject(view);
 
         return builder;
     }
