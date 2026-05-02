@@ -2,8 +2,6 @@
 
 EF Core extension for tracking custom SQL (views, functions, triggers, or any raw SQL) in the model and auto-generating `Up`/`Down` migration code.
 
-**Providers:** PostgreSQL, SQL Server
-
 ## Packages
 
 | Package | Description | NuGet |
@@ -75,7 +73,7 @@ public partial class Initial : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.CreateTable("Animals", ...);
+        migrationBuilder.CreateTable(name: "Animals", ...);
 
         // custom SQL runs after schema
         migrationBuilder.Sql("CREATE VIEW animals_view AS SELECT * FROM \"Animals\"");
@@ -86,7 +84,7 @@ public partial class Initial : Migration
         // custom SQL runs before schema rollback
         migrationBuilder.Sql("DROP VIEW IF EXISTS animals_view");
 
-        migrationBuilder.DropTable("Animals");
+        migrationBuilder.DropTable(name: "Animals");
     }
 }
 ```
@@ -94,28 +92,18 @@ public partial class Initial : Migration
 ### Snapshot
 
 ```csharp
-modelBuilder.HasAnnotation("CustomSql:View:animals_view:Down", "DROP VIEW IF EXISTS ...");
-modelBuilder.HasAnnotation("CustomSql:View:animals_view:Up", "CREATE VIEW ...");
+modelBuilder.HasAnnotation("CustomSql:Raw:animals_view:Down", "DROP VIEW IF EXISTS ...");
+modelBuilder.HasAnnotation("CustomSql:Raw:animals_view:Up", "CREATE VIEW ...");
 ```
 
 ---
 
 ## Views
 
-### Register standalone view
+### Register view with `HasCreateSql`
 
-```csharp
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.HasViewSql(
-        name: "animals_view",
-        sql: "SELECT id, name FROM \"Animals\" WHERE \"IsActive\" = true");
-}
-```
-
-### Register view mapped to entity
-
-Use `ToView()` first, then `HasQuerySql()`:
+`HasCreateSql(...)` expects full view creation SQL (`CREATE VIEW ...`).
+The corresponding `DROP VIEW` script for `Down` is generated automatically.
 
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -123,10 +111,27 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     modelBuilder.Entity<AnimalView>(entity =>
     {
         entity.HasNoKey();
-        
-        entity
-            .ToView("animals_view") 
-            .HasQuerySql("SELECT id, name FROM \"Animals\" WHERE \"IsActive\" = true");
+        entity.ToView("animals_view", o =>
+            o.HasCreateSql("CREATE VIEW animals_view AS SELECT id, name FROM \"Animals\" WHERE \"IsActive\" = true")
+        );
+    });
+}
+```
+
+### Register view with `HasQuerySql`
+
+Use `HasQuerySql()` to define the view query body:
+
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<AnimalView>(entity =>
+    {
+        entity.HasNoKey();
+
+        entity.ToView("animals_view", o =>
+            o.HasQuerySql("SELECT id, name FROM \"Animals\" WHERE \"IsActive\" = true")
+        );
     });
 }
 ```
@@ -135,22 +140,56 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 
 ## Functions
 
-The body can start with just the statements — `BEGIN`/`END` is added automatically. Or provide a full block starting with `BEGIN` or `DECLARE` to skip auto-wrapping.
+### Register function with `HasCreateSql`
 
-### Register function with `HasFunctionSql`
+When you register object creation via `HasCreateSql(...)`, the package automatically generates the corresponding drop script for `Down`.
+
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder
+        .HasDbFunction(typeof(AppDbContext).GetMethod(nameof(GetAnimalCount))!)
+        .HasName("get_active_count")
+        .HasCreateSql("""
+            CREATE FUNCTION get_active_count(type integer, is_active boolean)
+            RETURNS integer
+            LANGUAGE plpgsql
+            AS $$
+            BEGIN
+                RETURN (SELECT COUNT(*) FROM "Animals" WHERE "Type" = type AND "IsActive" = is_active);
+            END;
+            $$;
+            """);
+}
+```
+
+Where the CLR method:
+
+```csharp
+public static int GetAnimalCount(int type, bool is_active) => throw new NotSupportedException();
+```
+
+### Register function with `HasBodySql`
+
+`HasBodySql` attaches function body SQL and uses function metadata (name/args/return type) from `DbFunctionBuilder`:
+
+The body can start with just statements — `BEGIN`/`END` is added automatically.
+Or provide a full block starting with `BEGIN` or `DECLARE` to skip auto-wrapping.
 
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     // short body — BEGIN/END auto-added
-    modelBuilder.HasFunctionSql(
-        name: "get_active_count",
-        body: "RETURN (SELECT COUNT(*) FROM \"Animals\" WHERE \"IsActive\" = true);");
+    modelBuilder
+        .HasDbFunction(typeof(AppDbContext).GetMethod(nameof(GetAnimalCount))!)
+        .HasName("get_active_count")
+        .HasBodySql("RETURN (SELECT COUNT(*) FROM \"Animals\" WHERE \"Type\" = type AND \"IsActive\" = is_active);");
 
     // full block — used as-is
-    modelBuilder.HasFunctionSql(
-        name: "get_active_count_full",
-        body: """
+    modelBuilder
+        .HasDbFunction(typeof(AppDbContext).GetMethod(nameof(GetAnimalCount))!)
+        .HasName("get_active_count")
+        .HasBodySql("""
             DECLARE
                 cnt integer;
             BEGIN
@@ -161,35 +200,9 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 }
 ```
 
-### Register function with `HasBodySql`
-
-Use when function already registered via `HasDbFunction` — `HasBodySql` attaches SQL body, takes name/args/return type from `DbFunctionBuilder`:
-
-```csharp
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.HasDbFunction(typeof(AppDbContext).GetMethod(nameof(GetAnimalCount)))
-        .HasBodySql("RETURN (SELECT COUNT(*) FROM \"Animals\" WHERE \"Type\" = type AND \"IsActive\" = is_active);");
-}
-```
-
-Where the CLR method:
-
-```csharp
-public static int GetAnimalCount(int type, bool is_active) => throw new NotSupportedException();
-```
-
 ---
 
 ## Triggers
-
-### Installation
-
-```
-dotnet add package EFCore.Migrations.CustomSql.PostgreSQL
-# or
-dotnet add package EFCore.Migrations.CustomSql.SqlServer
-```
 
 ### Registration
 
@@ -249,7 +262,7 @@ migrationBuilder.Sql("""
 Rollback:
 
 ```sql
-DROP FUNCTION set_square() CASCADE;
+DROP FUNCTION IF EXISTS set_square() CASCADE;
 ```
 
 ### SQL Server triggers
@@ -270,7 +283,7 @@ END;
 Rollback:
 
 ```sql
-DROP TRIGGER [trigger_name];
+DROP TRIGGER IF EXISTS [trigger_name];
 ```
 
 ---
