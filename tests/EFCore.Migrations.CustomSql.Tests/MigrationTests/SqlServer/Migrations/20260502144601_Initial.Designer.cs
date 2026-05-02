@@ -11,19 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
 {
     [DbContext(typeof(SqlServerMigrationDbContext))]
-<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260430193309_Initial.Designer.cs
-<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260430193309_Initial.Designer.cs
-<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260430193309_Initial.Designer.cs
-    [Migration("20260430193309_Initial")]
-========
-    [Migration("20260501195634_Initial")]
->>>>>>>> 9de0344 (Updated annotation key in snapshot.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260501195634_Initial.Designer.cs
-========
-    [Migration("20260501205054_Initial")]
->>>>>>>> 879653f (Moved EFCore.Migrations.Functions, EFCore.Migrations.Triggers, EFCore.Migrations.Views to):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260501205054_Initial.Designer.cs
-========
-    [Migration("20260502133426_Initial")]
->>>>>>>> c1c7fe6 (Updated ModelBuilderExtensions.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260502133426_Initial.Designer.cs
+    [Migration("20260502144601_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -31,17 +19,10 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260430193309_Initial.Designer.cs
-                .HasAnnotation("ProductVersion", "9.0.15")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("Sql:Custom:get_blog_name:Down", "DROP PROCEDURE IF EXISTS [get_blog_name]")
-                .HasAnnotation("Sql:Custom:get_blog_name:Up", "CREATE OR ALTER PROCEDURE [get_blog_name] @id INT AS SELECT [Name] FROM [Blogs] WHERE [Id] = @id");
-========
                 .HasAnnotation("CustomSql:Raw:get_blog_name:Down", "DROP PROCEDURE IF EXISTS [get_blog_name]")
                 .HasAnnotation("CustomSql:Raw:get_blog_name:Up", "CREATE OR ALTER PROCEDURE [get_blog_name] @id INT AS SELECT [Name] FROM [Blogs] WHERE [Id] = @id")
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "9.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
->>>>>>>> 9de0344 (Updated annotation key in snapshot.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/SqlServer/Migrations/20260501195634_Initial.Designer.cs
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
