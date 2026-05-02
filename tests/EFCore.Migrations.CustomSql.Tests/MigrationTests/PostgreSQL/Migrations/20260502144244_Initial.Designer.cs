@@ -11,19 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
 {
     [DbContext(typeof(PostgreSqlMigrationDbContext))]
-<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195039_Initial.Designer.cs
-<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195039_Initial.Designer.cs
-<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195039_Initial.Designer.cs
-    [Migration("20260430195039_Initial")]
-========
-    [Migration("20260501195623_Initial")]
->>>>>>>> 9de0344 (Updated annotation key in snapshot.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260501195623_Initial.Designer.cs
-========
-    [Migration("20260501205047_Initial")]
->>>>>>>> 879653f (Moved EFCore.Migrations.Functions, EFCore.Migrations.Triggers, EFCore.Migrations.Views to):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260501205047_Initial.Designer.cs
-========
-    [Migration("20260502133421_Initial")]
->>>>>>>> c1c7fe6 (Updated ModelBuilderExtensions.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260502133421_Initial.Designer.cs
+    [Migration("20260502144244_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -31,25 +19,14 @@ namespace EFCore.Migrations.CustomSql.Tests.MigrationTests.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-<<<<<<<< HEAD:tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260430195039_Initial.Designer.cs
-                .HasAnnotation("ProductVersion", "8.0.26")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("Sql:Custom:blog_names:Down", "DROP VIEW IF EXISTS public.blog_names")
-                .HasAnnotation("Sql:Custom:blog_names:Up", "CREATE OR REPLACE VIEW public.blog_names\nAS SELECT \"Id\", \"Name\" FROM \"Blogs\"")
-                .HasAnnotation("Sql:Custom:get_blog_name:Down", "DROP FUNCTION IF EXISTS GetName")
-                .HasAnnotation("Sql:Custom:get_blog_name:Up", "CREATE OR REPLACE FUNCTION GetName(id integer)\nRETURNS text AS $$\nBEGIN\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\n END;\n$$ LANGUAGE plpgsql;")
-                .HasAnnotation("Sql:Custom:get_blog_url:Down", "DROP FUNCTION IF EXISTS get_blog_url(id integer);")
-                .HasAnnotation("Sql:Custom:get_blog_url:Up", "CREATE OR REPLACE FUNCTION get_blog_url(id integer)\r\nRETURNS text\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\r\nEND;\r\n$$;");
-========
                 .HasAnnotation("CustomSql:Function:get_blog_url:Down", "DROP FUNCTION IF EXISTS get_blog_url(id integer);")
                 .HasAnnotation("CustomSql:Function:get_blog_url:Up", "CREATE OR REPLACE FUNCTION get_blog_url(id integer)\r\nRETURNS text\r\nLANGUAGE plpgsql\r\nAS $$\r\nBEGIN\r\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\r\nEND;\r\n$$;")
                 .HasAnnotation("CustomSql:Raw:blog_names:Down", "DROP VIEW IF EXISTS public.blog_names")
                 .HasAnnotation("CustomSql:Raw:blog_names:Up", "CREATE OR REPLACE VIEW public.blog_names\nAS SELECT \"Id\", \"Name\" FROM \"Blogs\"")
                 .HasAnnotation("CustomSql:Raw:get_blog_name:Down", "DROP FUNCTION IF EXISTS GetName")
                 .HasAnnotation("CustomSql:Raw:get_blog_name:Up", "CREATE OR REPLACE FUNCTION GetName(id integer)\nRETURNS text AS $$\nBEGIN\nRETURN (SELECT \"Name\" FROM \"Blogs\" WHERE \"Id\" = id);\n END;\n$$ LANGUAGE plpgsql;")
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "8.0.26")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
->>>>>>>> 9de0344 (Updated annotation key in snapshot.):tests/EFCore.Migrations.CustomSql.Tests/MigrationTests/PostgreSQL/Migrations/20260501195623_Initial.Designer.cs
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
