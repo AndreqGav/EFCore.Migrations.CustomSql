@@ -131,32 +131,32 @@ public static class ViewExtensions
     internal static void AddViewObject(this EntityTypeBuilder builder, ViewObjectBase view) =>
         builder.GetInfrastructure().AddViewObject(view);
 
-    public static ViewBuilder<TEntity> HasCreateSql<TEntity>(this ViewBuilder<TEntity> builder, string sql)
+    public static EntityTypeBuilder<TEntity> HasViewCreateSql<TEntity>(this EntityTypeBuilder<TEntity> builder, string sql)
         where TEntity : class
     {
         var view = new ViewObject
         {
-            Name = builder.Name,
-            Schema = builder.Schema,
+            Name = builder.Metadata.GetViewName(),
+            Schema = builder.Metadata.GetViewSchema(),
             SqlUp = sql,
         };
 
-        ((IInfrastructure<EntityTypeBuilder<TEntity>>)builder).Instance.AddViewObject(view);
+        builder.AddViewObject(view);
 
         return builder;
     }
 
-    public static ViewBuilder<TEntity> HasQuerySql<TEntity>(this ViewBuilder<TEntity> builder, string query)
+    public static EntityTypeBuilder<TEntity> HasViewQuerySql<TEntity>(this EntityTypeBuilder<TEntity> builder, string query)
         where TEntity : class
     {
         var view = new ViewObject
         {
-            Name = builder.Name,
-            Schema = builder.Schema,
+            Name = builder.Metadata.GetViewName(),
+            Schema = builder.Metadata.GetViewSchema(),
             Body = query,
         };
 
-        ((IInfrastructure<EntityTypeBuilder<TEntity>>)builder).Instance.AddViewObject(view);
+        builder.AddViewObject(view);
 
         return builder;
     }

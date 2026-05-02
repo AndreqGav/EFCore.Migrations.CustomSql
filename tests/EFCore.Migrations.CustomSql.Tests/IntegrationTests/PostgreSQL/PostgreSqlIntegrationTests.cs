@@ -197,16 +197,16 @@ internal class PostgreSqlTestDbContext : DbContext
         {
             entity.HasNoKey();
 
-            entity.ToView("OrderCatalogView", o =>
-                o.HasCreateSql("CREATE VIEW \"OrderCatalogView\" AS SELECT * FROM \"Orders\"")
-            );
+            entity.ToView("OrderCatalogView")
+                .HasViewCreateSql("CREATE VIEW \"OrderCatalogView\" AS SELECT * FROM \"Orders\"");
         });
 
         modelBuilder.Entity<BlogView>(entity =>
         {
             entity.HasNoKey();
 
-            entity.ToView("blog_view", o => o.HasQuerySql("SELECT * FROM \"Blogs\""));
+            entity.ToView("blog_view")
+                .HasViewQuerySql("SELECT * FROM \"Blogs\"");
         });
 
         modelBuilder

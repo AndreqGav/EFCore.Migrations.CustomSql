@@ -150,6 +150,6 @@ public static class SqlServerTriggersExtensions
             Body = body,
         };
 
-        entityTypeBuilder.AddTriggerAnnotation(trigger);
+        entityTypeBuilder.AddTriggerObject(trigger);
     }
 }

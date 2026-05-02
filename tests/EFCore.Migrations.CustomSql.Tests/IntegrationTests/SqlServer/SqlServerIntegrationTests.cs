@@ -195,18 +195,16 @@ internal class SqlServerTestDbContext : DbContext
         modelBuilder.Entity<BlogView>(entity =>
         {
             entity.HasNoKey();
-            entity.ToView("blog_view", o =>
-                o.HasQuerySql("SELECT * FROM [Blogs]")
-            );
+            entity.ToView("blog_view")
+                .HasViewQuerySql("SELECT * FROM [Blogs]");
         });
 
 
         modelBuilder.Entity<OrderCatalogView>(entity =>
         {
             entity.HasNoKey();
-            entity.ToView("order_catalog_view", o =>
-                o.HasCreateSql("CREATE VIEW [order_catalog_view] AS SELECT * FROM [Orders]")
-            );
+            entity.ToView("order_catalog_view")
+                .HasViewCreateSql("CREATE VIEW [order_catalog_view] AS SELECT * FROM [Orders]");
         });
     }
 }
